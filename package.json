@@ -1,0 +1,24 @@
+{
+  "name": "tarochi-season-pass-contracts",
+  "version": "1.0.0",
+  "description": "**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "anvil": "bash -c 'source .env && anvil -m \"$LOCALCHAIN_DEPLOYER_MNEMONIC\"'",
+    "compile": "forge build",
+    "format": "forge fmt",
+    "deploy:localhost": "bash -c 'source .env && forge script script/Deploy.s.sol:Deploy --broadcast --private-key $LOCALCHAIN_DEPLOYER_PK --fork-url http://localhost:8545'",
+    "deploy:xai:testnet": "bash -c 'source .env && forge script script/Deploy.s.sol:Deploy --rpc-url $XAI_TESTNET_RPC --broadcast --private-key $DEPLOYER_PK'",
+    "deploy:xai:mainnet": "bash -c 'source .env && forge script script/Deploy.s.sol:Deploy --rpc-url $XAI_MAINNET_RPC --broadcast --private-key $DEPLOYER_PK --verify --verifier blockscout --verifier-url https://explorer.xai-chain.net/api?'"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@openzeppelin/contracts": "^4.9.0",
+    "@openzeppelin/contracts-upgradeable": "^4.9.0"
+  }
+}

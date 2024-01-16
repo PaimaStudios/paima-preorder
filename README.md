@@ -1,66 +1,33 @@
-## Foundry
+# Tarochi Season Pass contracts
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+### Preparing for usage
 
-Foundry consists of:
+1. Install Foundry by following the instructions from [their repository](https://github.com/foundry-rs/foundry#installation).
+2. Copy the `.env.template` file to `.env` and fill in the variables.
+3. Install the dependencies by running: `yarn`
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+### Compiling smart contracts
 
-## Documentation
-
-https://book.getfoundry.sh/
-
-## Usage
-
-### Build
-
-```shell
-$ forge build
+```bash
+yarn compile
+yarn compile:sizes (to see contracts sizes)
 ```
 
-### Test
+### Running local chain and deploying to it
 
-```shell
-$ forge test
+```bash
+yarn anvil
+yarn deploy:localhost
 ```
 
-### Format
+### Deploying to testnet or mainnet
 
-```shell
-$ forge fmt
-```
+Forge will deploy the contract at a deterministic address due to specified salt in the `Deploy.s.sol` script, using [deterministic deployment proxy](https://github.com/Arachnid/deterministic-deployment-proxy). Ensure that the proxy (0x4e59b44847b379578588920ca78fbf26c0b4956c) is deployed on the chain you're deploying to.  
+Also note that constructor args must also be the same. If you use different constructor args on different chains, the resulting deployment address will differ too.
 
-### Gas Snapshots
+Deploying to mainnets will automatically verify the smart contracts on the respective chains' explorers. To disable this, remove the `--verify` argument from the script.
 
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
+```bash
+yarn deploy:xai:testnet
+yarn deploy:xai:mainnet
 ```
