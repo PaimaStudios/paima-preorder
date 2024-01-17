@@ -18,8 +18,6 @@ contract TarochiSale is OwnableUpgradeable, UUPSUpgradeable {
     uint256 public nftErc20Price;
     /// @dev Address of the NFT that is being sold
     address public nftAddress;
-    /// @dev Mapping of referral code to address that registered it
-    mapping(string => address) referrals;
     /// @dev Array of addresses of tokens that are accepted as payment for the NFT sale.
     IERC20[] public supportedCurrencies;
 
@@ -27,6 +25,8 @@ contract TarochiSale is OwnableUpgradeable, UUPSUpgradeable {
     event BuyNFT(
         address indexed receiver, address indexed buyer, address indexed paymentToken, uint256 price, uint256 tokenId
     );
+    /// @dev Emitted when a `referrer` receives `reward` amount of `paymentToken` in an NFT sale initiated by `buyer`.
+    event ReferrerReward(address indexed referrer, address indexed buyer, address indexed paymentToken, uint256 reward);
     /// @dev Emitted when the `token` is removed from the list of `supportedCurrencies`.
     event RemoveWhitelistedToken(address indexed token);
     /// @dev Emitted when the native tokens NFT price is updated from `oldPrice` to `newPrice`.
@@ -57,13 +57,19 @@ contract TarochiSale is OwnableUpgradeable, UUPSUpgradeable {
     /// @dev Purchases NFT for address `receiverAddress`, paying required price in native token.
     /// This function calls the `mint` function on the `AnnotatedMintNft` contract.
     /// Emits the `BuyNFT` event.
-    function buyNftNative(address receiverAddress, string memory referralCode) public payable returns (uint256) {
-        require(msg.value == nftNativePrice, "TarochiSale: incorrect value");
+    function buyNftNative(address receiverAddress, address payable referrer) public payable returns (uint256) {
+        (uint256 price, uint256 referrerReward) = getPriceAndRefererReward(nftNativePrice, referrer);
+        require(msg.value == price, "TarochiSale: incorrect value");
         require(receiverAddress != address(0), "TarochiSale: zero receiver address");
+
+        if (referrerReward != 0) {
+            referrer.sendValue(referrerReward);
+            emit ReferrerReward(referrer, msg.sender, address(0), referrerReward);
+        }
 
         uint256 tokenId = TarochiSeasonPassNft(nftAddress).mint(receiverAddress, "");
 
-        emit BuyNFT(receiverAddress, msg.sender, address(0), nftNativePrice, tokenId);
+        emit BuyNFT(receiverAddress, msg.sender, address(0), price, tokenId);
 
         return tokenId;
     }
@@ -71,24 +77,43 @@ contract TarochiSale is OwnableUpgradeable, UUPSUpgradeable {
     /// @dev Purchases NFT for address `receiverAddress`, paying required price in supported ERC20 tokens.
     /// This function calls the `mint` function on the `AnnotatedMintNft` contract.
     /// Emits the `BuyNFT` event.
-    function buyNftErc20(IERC20 _tokenAddress, address receiverAddress, string memory referralCode)
+    function buyNftErc20(IERC20 _tokenAddress, address receiverAddress, address referrer)
         public
         payable
         returns (uint256)
     {
+        (uint256 price, uint256 referrerReward) = getPriceAndRefererReward(nftErc20Price, referrer);
         require(tokenIsWhitelisted(_tokenAddress), "TarochiSale: token not whitelisted");
         require(receiverAddress != address(0), "TarochiSale: zero receiver address");
 
-        uint256 price = nftErc20Price;
+        if (referrerReward != 0) {
+            IERC20(_tokenAddress).transferFrom(msg.sender, referrer, referrerReward);
+            emit ReferrerReward(referrer, msg.sender, address(_tokenAddress), referrerReward);
+        }
 
-        // transfer tokens from buyer to contract
-        IERC20(_tokenAddress).transferFrom(msg.sender, address(this), price);
+        IERC20(_tokenAddress).transferFrom(msg.sender, address(this), price - referrerReward);
 
         uint256 tokenId = TarochiSeasonPassNft(nftAddress).mint(receiverAddress, "");
 
         emit BuyNFT(receiverAddress, msg.sender, address(_tokenAddress), price, tokenId);
 
         return tokenId;
+    }
+
+    /// @dev Computes the discounted price and referrer reward portion from that price, if referrer is not address(0).
+    /// Discount is 10%, and then 5% from the result is the referrer reward.
+    function getPriceAndRefererReward(uint256 originalPrice, address referrer)
+        internal
+        pure
+        returns (uint256 price, uint256 referrerReward)
+    {
+        if (referrer == address(0)) {
+            price = originalPrice;
+            referrerReward = 0;
+        } else {
+            price = ((originalPrice * 9) / 10);
+            referrerReward = price / 20;
+        }
     }
 
     /// @dev Returns an array of token addresses that are accepted as payment in the NFT purchase.
