@@ -18,8 +18,6 @@ contract TarochiSale is OwnableUpgradeable, UUPSUpgradeable {
     uint256 public nftErc20Price;
     /// @dev Address of the NFT that is being sold
     address public nftAddress;
-    /// @dev Can't buy NFT after this timestamp
-    uint256 public saleDeadline;
     /// @dev Mapping of referral code to address that registered it
     mapping(string => address) referrals;
     /// @dev Array of addresses of tokens that are accepted as payment for the NFT sale.
@@ -43,13 +41,10 @@ contract TarochiSale is OwnableUpgradeable, UUPSUpgradeable {
         _disableInitializers();
     }
 
-    function initialize(
-        address owner,
-        address _nftAddress,
-        uint256 _nftNativePrice,
-        uint256 _nftErc20Price,
-        uint256 _saleDeadline
-    ) public initializer {
+    function initialize(address owner, address _nftAddress, uint256 _nftNativePrice, uint256 _nftErc20Price)
+        public
+        initializer
+    {
         __Ownable_init();
         __UUPSUpgradeable_init();
         _transferOwnership(owner);
@@ -57,14 +52,12 @@ contract TarochiSale is OwnableUpgradeable, UUPSUpgradeable {
         nftAddress = _nftAddress;
         nftNativePrice = _nftNativePrice;
         nftErc20Price = _nftErc20Price;
-        saleDeadline = _saleDeadline;
     }
 
     /// @dev Purchases NFT for address `receiverAddress`, paying required price in native token.
     /// This function calls the `mint` function on the `AnnotatedMintNft` contract.
     /// Emits the `BuyNFT` event.
     function buyNftNative(address receiverAddress, string memory referralCode) public payable returns (uint256) {
-        require(block.timestamp < saleDeadline, "TarochiSale: sale concluded");
         require(msg.value == nftNativePrice, "TarochiSale: incorrect value");
         require(receiverAddress != address(0), "TarochiSale: zero receiver address");
 
@@ -83,7 +76,6 @@ contract TarochiSale is OwnableUpgradeable, UUPSUpgradeable {
         payable
         returns (uint256)
     {
-        require(block.timestamp < saleDeadline, "TarochiSale: sale concluded");
         require(tokenIsWhitelisted(_tokenAddress), "TarochiSale: token not whitelisted");
         require(receiverAddress != address(0), "TarochiSale: zero receiver address");
 

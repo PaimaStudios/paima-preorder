@@ -18,6 +18,8 @@ contract TarochiSeasonPassNft is ERC165, ERC721, Ownable {
     uint256 public maxSupply;
     /// @dev Base extension that is used in the `tokenURI` function to form the end of the token URI.
     string public baseExtension;
+    /// @dev Can't mint NFT after this timestamp
+    uint256 public mintDeadline;
 
     /// @dev Returns true for addresses that are allowed to mint this token.
     mapping(address => bool) public minters;
@@ -55,15 +57,18 @@ contract TarochiSeasonPassNft is ERC165, ERC721, Ownable {
     /// @dev Emitted when a new token with ID `tokenId` is minted, with `initialData` provided in the `mint` function parameters.
     event Minted(uint256 indexed tokenId, string initialData);
 
+    /// @dev Emitted when the mint deadline is updated from `oldDeadline` to `newDeadline`.
+    event UpdateDeadline(uint256 indexed oldDeadline, uint256 indexed newDeadline);
+
     /// @dev Sets the NFT's `name`, `symbol`, `maxSupply` to `supply`, and transfers ownership to `owner`.
-    /// Also sets `currentTokenId` to 1 and `baseExtension` to `".json"`.
-    /// @param name Collection name.
-    /// @param symbol Collection symbol.
-    /// @param owner The owner of the contract, who will be able to execute
-    constructor(string memory name, string memory symbol, uint256 supply, address owner) ERC721(name, symbol) {
+    /// Also sets `currentTokenId` to 1, `baseExtension` to `".json"`, and `mintDeadline` to `_mintDeadline`.
+    constructor(string memory name, string memory symbol, uint256 supply, address owner, uint256 _mintDeadline)
+        ERC721(name, symbol)
+    {
         maxSupply = supply;
         currentTokenId = 1;
         baseExtension = ".json";
+        mintDeadline = _mintDeadline;
         transferOwnership(owner);
     }
 
@@ -78,6 +83,7 @@ contract TarochiSeasonPassNft is ERC165, ERC721, Ownable {
     /// Reverts if `totalSupply` is not less than `maxSupply` or if `_to` is a zero address.
     /// Emits the `Minted` event.
     function mint(address _to, string calldata initialData) external canMint returns (uint256) {
+        require(block.timestamp < mintDeadline, "TarochiSeasonPassNft: minting concluded");
         require(maxSupply > totalSupply, "AnnotatedMintNft: max supply reached");
         require(_to != address(0), "AnnotatedMintNft: zero receiver address");
 
@@ -142,6 +148,15 @@ contract TarochiSeasonPassNft is ERC165, ERC721, Ownable {
     /// Callable only by the contract owner.
     function setBaseExtension(string memory _newBaseExtension) public onlyOwner {
         baseExtension = _newBaseExtension;
+    }
+
+    /// @dev Changes the minting deadline to `_mintDeadline`.
+    /// Callable only by the contract owner.
+    function updateMintDeadline(uint256 _mintDeadline) external onlyOwner {
+        uint256 oldDeadline = mintDeadline;
+        mintDeadline = _mintDeadline;
+
+        emit UpdateDeadline(oldDeadline, _mintDeadline);
     }
 
     /// @dev Sets `_maxSupply` as the `maxSupply` of the NFT.

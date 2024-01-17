@@ -1,5 +1,16 @@
 # Tarochi Season Pass contracts
 
+## Contracts
+
+### TarochiSeasonPassNft.sol
+
+Forked from `@paima/evm-contracts` `AnnotatedMintNft.sol`. Updated solidity version and implemented minting deadline.
+
+### TarochiSale.sol
+
+Created by combining `NativeNftSale.sol` and `Erc20NftSale.sol` from `@paima/evm-contracts` to facilitate the ability to pay with both native tokens and ERC20 tokens and add referral system.  
+It implements UUPS proxy pattern and is used via OpenZeppelin's ERC1967Proxy.
+
 ### Preparing for usage
 
 1. Install Foundry by following the instructions from [their repository](https://github.com/foundry-rs/foundry#installation).
@@ -10,7 +21,6 @@
 
 ```bash
 yarn compile
-yarn compile:sizes (to see contracts sizes)
 ```
 
 ### Running local chain and deploying to it
@@ -30,4 +40,6 @@ Deploying to mainnets will automatically verify the smart contracts on the respe
 ```bash
 yarn deploy:xai:testnet
 yarn deploy:xai:mainnet
+yarn deploy:arb:testnet
+yarn deploy:arb:mainnet
 ```

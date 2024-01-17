@@ -24,7 +24,7 @@ contract Deploy is Script {
         uint256 nftMaxSupply = type(uint256).max;
         // Define sale deadline timestamp
         // Thu Feb 15 2024 00:00:00 GMT+0000
-        uint256 saleDeadline = 1707955200;
+        uint256 mintDeadline = 1707955200;
 
         address ownerAddress = vm.envAddress("CONTRACT_OWNER_ADDRESS");
         string memory nftUri = vm.envString("NFT_URI");
@@ -35,17 +35,12 @@ contract Deploy is Script {
         bytes32 dummySalt = bytes32(uint256(1));
 
         TarochiSeasonPassNft nft =
-            new TarochiSeasonPassNft{salt: dummySalt}(nftName, nftSymbol, nftMaxSupply, ownerAddress);
+            new TarochiSeasonPassNft{salt: dummySalt}(nftName, nftSymbol, nftMaxSupply, ownerAddress, mintDeadline);
         nft.setBaseExtension(nftUri);
 
         TarochiSale tarochiSaleImpl = new TarochiSale{salt: dummySalt}();
         bytes memory initializeData = abi.encodeWithSignature(
-            "initialize(address,address,uint256,uint256,uint256)",
-            ownerAddress,
-            address(nft),
-            nftNativePrice,
-            nftErc20Price,
-            saleDeadline
+            "initialize(address,address,uint256,uint256)", ownerAddress, address(nft), nftNativePrice, nftErc20Price
         );
         ERC1967Proxy tarochiSaleProxy = new ERC1967Proxy{salt: dummySalt}(address(tarochiSaleImpl), initializeData);
 
