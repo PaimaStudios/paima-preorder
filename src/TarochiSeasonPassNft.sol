@@ -24,10 +24,7 @@ contract TarochiSeasonPassNft is ERC165, ERC721, Ownable {
 
     /// @dev Reverts if `msg.sender` is neither a minter nor the contract owner.
     modifier canMint() {
-        require(
-            isMinter(msg.sender) || owner() == msg.sender,
-            "AnnotatedMintNft: not authorized to mint"
-        );
+        require(isMinter(msg.sender) || owner() == msg.sender, "AnnotatedMintNft: not authorized to mint");
         _;
     }
 
@@ -63,12 +60,7 @@ contract TarochiSeasonPassNft is ERC165, ERC721, Ownable {
     /// @param name Collection name.
     /// @param symbol Collection symbol.
     /// @param owner The owner of the contract, who will be able to execute
-    constructor(
-        string memory name,
-        string memory symbol,
-        uint256 supply,
-        address owner
-    ) ERC721(name, symbol) {
+    constructor(string memory name, string memory symbol, uint256 supply, address owner) ERC721(name, symbol) {
         maxSupply = supply;
         currentTokenId = 1;
         baseExtension = ".json";
@@ -76,12 +68,9 @@ contract TarochiSeasonPassNft is ERC165, ERC721, Ownable {
     }
 
     /// @dev Returns true if this contract implements the interface defined by `interfaceID`. See EIP165.
-    function supportsInterface(
-        bytes4 interfaceID
-    ) public pure override(ERC165, ERC721) returns (bool) {
-        return
-            interfaceID == this.supportsInterface.selector || // ERC165
-            interfaceID == this.mint.selector; // ERC721 Paima-extended
+    function supportsInterface(bytes4 interfaceID) public pure override(ERC165, ERC721) returns (bool) {
+        return interfaceID == this.supportsInterface.selector // ERC165
+            || interfaceID == this.mint.selector; // ERC721 Paima-extended
     }
 
     /// @dev Mints a new token to address `_to`, passing `initialData` to be emitted in the event.
@@ -104,9 +93,7 @@ contract TarochiSeasonPassNft is ERC165, ERC721, Ownable {
 
     /// @dev Burns token of ID `_tokenId`. Callable only by the owner of the specified token.
     /// Reverts if `_tokenId` is not existing.
-    function burn(
-        uint256 _tokenId
-    ) external onlyExistingTokenId(_tokenId) onlyTokenOwner(_tokenId) {
+    function burn(uint256 _tokenId) external onlyExistingTokenId(_tokenId) onlyTokenOwner(_tokenId) {
         totalSupply--;
         _burn(_tokenId);
     }
