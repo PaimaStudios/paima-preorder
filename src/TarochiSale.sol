@@ -78,11 +78,7 @@ contract TarochiSale is OwnableUpgradeable, UUPSUpgradeable {
     /// @dev Purchases NFT for address `receiverAddress`, paying required price in supported ERC20 tokens.
     /// This function calls the `mint` function on the `AnnotatedMintNft` contract.
     /// Emits the `BuyNFT` event.
-    function buyNftErc20(IERC20 _tokenAddress, address receiverAddress, address referrer)
-        public
-        payable
-        returns (uint256)
-    {
+    function buyNftErc20(IERC20 _tokenAddress, address receiverAddress, address referrer) public returns (uint256) {
         require(msg.sender != referrer, "TarochiSale: cannot refer yourself");
         (uint256 price, uint256 referrerReward) = getPriceAndRefererReward(nftErc20Price, referrer);
         require(tokenIsWhitelisted(_tokenAddress), "TarochiSale: token not whitelisted");
