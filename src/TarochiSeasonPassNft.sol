@@ -5,9 +5,10 @@ import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import {ITarochiSeasonPassNft} from "./ITarochiSeasonPassNft.sol";
 
 /// @dev A standard ERC721 that accepts calldata in the mint function for any initialization data needed in a Paima dApp.
-contract TarochiSeasonPassNft is ERC165, ERC721, Ownable {
+contract TarochiSeasonPassNft is ITarochiSeasonPassNft, ERC165, ERC721, Ownable {
     /// @dev The token ID that will be minted when calling the `mint` function.
     uint256 public currentTokenId;
     /// @dev Base URI that is used in the `tokenURI` function to form the start of the token URI.
@@ -42,24 +43,6 @@ contract TarochiSeasonPassNft is ERC165, ERC721, Ownable {
         _;
     }
 
-    /// @dev Emitted when max supply is updated from `oldMaxSupply` to `newMaxSupply`.
-    event UpdateMaxSupply(uint256 indexed oldMaxSupply, uint256 indexed newMaxSupply);
-
-    /// @dev Emitted when `newMinter` is added to the mapping of allowed `minters`.
-    event SetMinter(address indexed newMinter);
-
-    /// @dev Emitted when `oldMinter` is removed from the mapping of allowed `minters`
-    event RemoveMinter(address indexed oldMinter);
-
-    /// @dev Emitted when `baseUri` is updated from `oldUri` to `newUri`.
-    event SetBaseURI(string oldUri, string newUri);
-
-    /// @dev Emitted when a new token with ID `tokenId` is minted, with `initialData` provided in the `mint` function parameters.
-    event Minted(uint256 indexed tokenId, string initialData);
-
-    /// @dev Emitted when the mint deadline is updated from `oldDeadline` to `newDeadline`.
-    event UpdateDeadline(uint256 indexed oldDeadline, uint256 indexed newDeadline);
-
     /// @dev Sets the NFT's `name`, `symbol`, `maxSupply` to `supply`, and transfers ownership to `owner`.
     /// Also sets `currentTokenId` to 1, `baseExtension` to `".json"`, and `mintDeadline` to `_mintDeadline`.
     constructor(string memory name, string memory symbol, uint256 supply, address owner, uint256 _mintDeadline)
@@ -73,9 +56,8 @@ contract TarochiSeasonPassNft is ERC165, ERC721, Ownable {
     }
 
     /// @dev Returns true if this contract implements the interface defined by `interfaceID`. See EIP165.
-    function supportsInterface(bytes4 interfaceID) public pure override(ERC165, ERC721) returns (bool) {
-        return interfaceID == this.supportsInterface.selector // ERC165
-            || interfaceID == this.mint.selector; // ERC721 Paima-extended
+    function supportsInterface(bytes4 interfaceId) public view override(ERC165, ERC721) returns (bool) {
+        return interfaceId == type(ITarochiSeasonPassNft).interfaceId || super.supportsInterface(interfaceId);
     }
 
     /// @dev Mints a new token to address `_to`, passing `initialData` to be emitted in the event.

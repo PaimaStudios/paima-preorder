@@ -101,7 +101,7 @@ contract TarochiSale is OwnableUpgradeable, UUPSUpgradeable {
     /// @dev Computes the discounted price and referrer reward portion from that price, if referrer is not address(0).
     /// Discount is 10%, and then 5% from the result is the referrer reward.
     function getPriceAndRefererReward(uint256 originalPrice, address referrer)
-        internal
+        public
         pure
         returns (uint256 price, uint256 referrerReward)
     {
