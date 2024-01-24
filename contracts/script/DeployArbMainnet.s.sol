@@ -16,10 +16,9 @@ contract DeployArbMainnet is Deploy {
         // Define sale price in supported ERC20 tokens
         uint256 nftErc20Price = 100 * 1e6;
         // Define supported ERC20 payment tokens
-        IERC20[] memory supportedCurrencies = new IERC20[](3);
-        supportedCurrencies[0] = IERC20(0x912CE59144191C1204E64559FE8253a0e49E6548); // ARB
-        supportedCurrencies[1] = IERC20(0xaf88d065e77c8cC2239327C5EDb3A432268e5831); // USDC
-        supportedCurrencies[2] = IERC20(0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9); // USDT
+        IERC20[] memory supportedCurrencies = new IERC20[](2);
+        supportedCurrencies[0] = IERC20(0xaf88d065e77c8cC2239327C5EDb3A432268e5831); // USDC
+        supportedCurrencies[1] = IERC20(0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9); // USDT
         // Define NFT name
         string memory nftName = "Tarochi Season 1 Pass";
         // Define NFT symbol
