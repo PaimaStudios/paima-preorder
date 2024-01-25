@@ -24,13 +24,9 @@ contract DeployXaiTestnet is Deploy {
         string memory nftSymbol = "TSP1";
         // Define NFT max supply (unlimited)
         uint256 nftMaxSupply = type(uint256).max;
-        // Define sale deadline timestamp
-        uint256 mintDeadline = 1707955200; // Thu Feb 15 2024 00:00:00 GMT+0000
 
         runCommon(
-            Deploy.DeployParams(
-                nftNativePrice, nftErc20Price, supportedCurrencies, nftName, nftSymbol, nftMaxSupply, mintDeadline
-            )
+            Deploy.DeployParams(nftNativePrice, nftErc20Price, supportedCurrencies, nftName, nftSymbol, nftMaxSupply)
         );
     }
 }

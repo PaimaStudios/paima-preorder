@@ -13,14 +13,16 @@ import {TarochiSeasonPassNft} from "../src/TarochiSeasonPassNft.sol";
 import {Deploy} from "./Deploy.s.sol";
 
 contract DeployLocalhost is Script {
+    // Define sale deadline timestamp
+    uint256 mintDeadline = 1707955200; // Thu Feb 15 2024 00:00:00 GMT+0000
+
     function runCommon(Deploy.DeployParams memory params) internal {
         address ownerAddress = vm.envAddress("LOCALCHAIN_DEPLOYER_ADDRESS");
         string memory nftUri = vm.envString("NFT_URI");
         vm.startBroadcast();
 
-        TarochiSeasonPassNft nft = new TarochiSeasonPassNft(
-            params.nftName, params.nftSymbol, params.nftMaxSupply, ownerAddress, params.mintDeadline
-        );
+        TarochiSeasonPassNft nft =
+            new TarochiSeasonPassNft(params.nftName, params.nftSymbol, params.nftMaxSupply, ownerAddress, mintDeadline);
 
         TarochiSale tarochiSaleImpl = new TarochiSale();
         bytes memory initializeData = abi.encodeWithSignature(
@@ -58,13 +60,9 @@ contract DeployLocalhost is Script {
         string memory nftSymbol = "TSP1";
         // Define NFT max supply (unlimited)
         uint256 nftMaxSupply = type(uint256).max;
-        // Define sale deadline timestamp
-        uint256 mintDeadline = 1707955200; // Thu Feb 15 2024 00:00:00 GMT+0000
 
         runCommon(
-            Deploy.DeployParams(
-                nftNativePrice, nftErc20Price, supportedCurrencies, nftName, nftSymbol, nftMaxSupply, mintDeadline
-            )
+            Deploy.DeployParams(nftNativePrice, nftErc20Price, supportedCurrencies, nftName, nftSymbol, nftMaxSupply)
         );
     }
 }

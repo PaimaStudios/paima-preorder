@@ -12,6 +12,9 @@ import {TarochiSale} from "../src/TarochiSale.sol";
 import {TarochiSeasonPassNft} from "../src/TarochiSeasonPassNft.sol";
 
 contract Deploy is Script {
+    // Define sale deadline timestamp
+    uint256 mintDeadline = 1708012800; // Thu Feb 15 2024 16:00:00 GMT+0000
+
     struct DeployParams {
         uint256 nftNativePrice;
         uint256 nftErc20Price;
@@ -19,7 +22,6 @@ contract Deploy is Script {
         string nftName;
         string nftSymbol;
         uint256 nftMaxSupply;
-        uint256 mintDeadline;
     }
 
     function runCommon(DeployParams memory params) internal {
@@ -32,7 +34,7 @@ contract Deploy is Script {
         bytes32 dummySalt = bytes32(uint256(1));
 
         TarochiSeasonPassNft nft = new TarochiSeasonPassNft{salt: dummySalt}(
-            params.nftName, params.nftSymbol, params.nftMaxSupply, ownerAddress, params.mintDeadline
+            params.nftName, params.nftSymbol, params.nftMaxSupply, ownerAddress, mintDeadline
         );
 
         TarochiSale tarochiSaleImpl = new TarochiSale{salt: dummySalt}();
