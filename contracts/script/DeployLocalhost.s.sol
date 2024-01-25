@@ -13,16 +13,21 @@ import {TarochiSeasonPassNft} from "../src/TarochiSeasonPassNft.sol";
 import {Deploy} from "./Deploy.s.sol";
 
 contract DeployLocalhost is Script {
-    // Define sale deadline timestamp
-    uint256 mintDeadline = 1707955200; // Thu Feb 15 2024 00:00:00 GMT+0000
+    // Define NFT name
+    string nftName = "Tarochi Season 1 Pass";
+    // Define NFT symbol
+    string nftSymbol = "TSP1";
+    // Define NFT max supply (unlimited)
+    uint256 nftMaxSupply = type(uint256).max;
 
     function runCommon(Deploy.DeployParams memory params) internal {
+        uint256 mintDeadline = vm.envUint("DEPLOYMENT_SALE_DEADLINE");
         address ownerAddress = vm.envAddress("LOCALCHAIN_DEPLOYER_ADDRESS");
-        string memory nftUri = vm.envString("NFT_URI");
+        string memory nftUri = vm.envString("DEPLOYMENT_NFT_URI");
         vm.startBroadcast();
 
         TarochiSeasonPassNft nft =
-            new TarochiSeasonPassNft(params.nftName, params.nftSymbol, params.nftMaxSupply, ownerAddress, mintDeadline);
+            new TarochiSeasonPassNft(nftName, nftSymbol, nftMaxSupply, ownerAddress, mintDeadline);
 
         TarochiSale tarochiSaleImpl = new TarochiSale();
         bytes memory initializeData = abi.encodeWithSignature(
@@ -34,7 +39,11 @@ contract DeployLocalhost is Script {
         );
         ERC1967Proxy tarochiSaleProxy = new ERC1967Proxy(address(tarochiSaleImpl), initializeData);
 
-        TarochiSale(address(tarochiSaleProxy)).whitelistTokens(params.supportedCurrencies);
+        IERC20[] memory supportedCurrencies = new IERC20[](params.supportedCurrencies.length);
+        for (uint256 i = 0; i < supportedCurrencies.length; i++) {
+            supportedCurrencies[i] = IERC20(params.supportedCurrencies[i]);
+        }
+        TarochiSale(address(tarochiSaleProxy)).whitelistTokens(supportedCurrencies);
 
         nft.setBaseExtension(nftUri);
         nft.setMinter(address(tarochiSaleProxy));
@@ -52,17 +61,9 @@ contract DeployLocalhost is Script {
         // Define sale price in supported ERC20 tokens
         uint256 nftErc20Price = 100 * 1e6;
         // Define supported ERC20 payment tokens
-        IERC20[] memory supportedCurrencies = new IERC20[](1);
-        supportedCurrencies[0] = IERC20(0xF200edFf719b0519eb3ced3cc05802D493A04ca8); // USDC
-        // Define NFT name
-        string memory nftName = "Tarochi Season 1 Pass";
-        // Define NFT symbol
-        string memory nftSymbol = "TSP1";
-        // Define NFT max supply (unlimited)
-        uint256 nftMaxSupply = type(uint256).max;
+        address[] memory supportedCurrencies = new address[](1);
+        supportedCurrencies[0] = 0xF200edFf719b0519eb3ced3cc05802D493A04ca8; // USDC
 
-        runCommon(
-            Deploy.DeployParams(nftNativePrice, nftErc20Price, supportedCurrencies, nftName, nftSymbol, nftMaxSupply)
-        );
+        runCommon(Deploy.DeployParams(nftNativePrice, nftErc20Price, supportedCurrencies));
     }
 }

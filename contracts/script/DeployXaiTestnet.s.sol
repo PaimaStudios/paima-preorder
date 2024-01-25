@@ -16,17 +16,9 @@ contract DeployXaiTestnet is Deploy {
         // Define sale price in supported ERC20 tokens
         uint256 nftErc20Price = 100 * 1e6;
         // Define supported ERC20 payment tokens
-        IERC20[] memory supportedCurrencies = new IERC20[](1);
-        supportedCurrencies[0] = IERC20(0xF200edFf719b0519eb3ced3cc05802D493A04ca8); // USDC
-        // Define NFT name
-        string memory nftName = "Tarochi Season 1 Pass";
-        // Define NFT symbol
-        string memory nftSymbol = "TSP1";
-        // Define NFT max supply (unlimited)
-        uint256 nftMaxSupply = type(uint256).max;
+        address[] memory supportedCurrencies = new address[](1);
+        supportedCurrencies[0] = 0xF200edFf719b0519eb3ced3cc05802D493A04ca8; // USDC
 
-        runCommon(
-            Deploy.DeployParams(nftNativePrice, nftErc20Price, supportedCurrencies, nftName, nftSymbol, nftMaxSupply)
-        );
+        runCommon(Deploy.DeployParams(nftNativePrice, nftErc20Price, supportedCurrencies));
     }
 }

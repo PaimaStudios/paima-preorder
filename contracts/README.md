@@ -32,7 +32,7 @@ yarn deploy:localhost
 
 ### Deploying to testnet or mainnet
 
-**Before deploying, edit `script/Deploy.s.sol` and `script/DeployArbMainnet.s.sol` (and/or respective deployment scripts) with the appropriate values for the deployment chain!** Particularly the `nftNativePrice`, `nftErc20Price`, and `supportedCurrencies`.
+**Before deploying, make sure you have set the correct values for `DEPLOYMENT_` variables in `.env`! Edit `script/Deploy.s.sol` if you wish to change the NFT name or symbol.**
 
 Forge will deploy the contract at a deterministic address due to specified salt in the `Deploy.s.sol` script, using [deterministic deployment proxy](https://github.com/Arachnid/deterministic-deployment-proxy). Ensure that the proxy (0x4e59b44847b379578588920ca78fbf26c0b4956c) is deployed on the chain you're deploying to.  
 Also note that constructor args must also be the same. If you use different constructor args on different chains, the resulting deployment address will differ too.
