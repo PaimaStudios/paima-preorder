@@ -161,4 +161,10 @@ contract TarochiSeasonPassNft is ITarochiSeasonPassNft, ERC165, ERC721, Ownable 
     function isMinter(address _account) public view returns (bool) {
         return minters[_account];
     }
+
+    function _beforeTokenTransfer(address from, address to, uint256, uint256) internal pure override {
+        require(
+            from == address(0) || to == address(0), "TarochiSeasonPassNft: NFT is soulbound - cannot be transferred"
+        );
+    }
 }

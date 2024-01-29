@@ -11,11 +11,7 @@ import {TarochiSeasonPassNft} from "./TarochiSeasonPassNft.sol";
 
 contract TarochiSale is OwnableUpgradeable, UUPSUpgradeable {
     using Address for address payable;
-    /// @dev NFT price in native gas tokens
 
-    uint256 public nftNativePrice;
-    /// @dev NFT price in accepted ERC20 tokens
-    uint256 public nftErc20Price;
     /// @dev Address of the NFT that is being sold
     address public nftAddress;
     /// @dev Array of addresses of tokens that are accepted as payment for the NFT sale.
@@ -23,16 +19,17 @@ contract TarochiSale is OwnableUpgradeable, UUPSUpgradeable {
 
     /// @dev Emitted when an NFT of `tokenId` is minted to `receiver` by `buyer` paying `price` in `paymentToken`.
     event BuyNFT(
-        address indexed receiver, address indexed buyer, address indexed paymentToken, uint256 price, uint256 tokenId
+        address indexed receiver,
+        address indexed buyer,
+        address indexed paymentToken,
+        uint256 price,
+        uint256 tokenId,
+        address referrer
     );
     /// @dev Emitted when a `referrer` receives `reward` amount of `paymentToken` in an NFT sale initiated by `buyer`.
     event ReferrerReward(address indexed referrer, address indexed buyer, address indexed paymentToken, uint256 reward);
     /// @dev Emitted when the `token` is removed from the list of `supportedCurrencies`.
     event RemoveWhitelistedToken(address indexed token);
-    /// @dev Emitted when the native tokens NFT price is updated from `oldPrice` to `newPrice`.
-    event UpdateNativePrice(uint256 indexed oldPrice, uint256 indexed newPrice);
-    /// @dev Emitted when the ERC20 tokens NFT price is updated from `oldPrice` to `newPrice`.
-    event UpdateErc20Price(uint256 indexed oldPrice, uint256 indexed newPrice);
     /// @dev Emitted when the `tokens` array is set as the `supportedCurrencies`.
     event WhitelistTokens(address[] indexed tokens);
 
@@ -41,26 +38,20 @@ contract TarochiSale is OwnableUpgradeable, UUPSUpgradeable {
         _disableInitializers();
     }
 
-    function initialize(address owner, address _nftAddress, uint256 _nftNativePrice, uint256 _nftErc20Price)
-        public
-        initializer
-    {
+    function initialize(address owner, address _nftAddress) public initializer {
         __Ownable_init();
         __UUPSUpgradeable_init();
         _transferOwnership(owner);
 
         nftAddress = _nftAddress;
-        nftNativePrice = _nftNativePrice;
-        nftErc20Price = _nftErc20Price;
     }
 
     /// @dev Purchases NFT for address `receiverAddress`, paying required price in native token.
     /// This function calls the `mint` function on the `AnnotatedMintNft` contract.
     /// Emits the `BuyNFT` event.
     function buyNftNative(address receiverAddress, address payable referrer) public payable returns (uint256) {
-        require(msg.sender != referrer, "TarochiSale: cannot refer yourself");
-        (uint256 price, uint256 referrerReward) = getPriceAndRefererReward(nftNativePrice, referrer);
-        require(msg.value == price, "TarochiSale: incorrect value");
+        require(msg.sender != referrer && receiverAddress != referrer, "TarochiSale: cannot refer yourself or receiver");
+        uint256 referrerReward = getReferrerReward(msg.value, referrer);
         require(receiverAddress != address(0), "TarochiSale: zero receiver address");
 
         if (referrerReward != 0) {
@@ -70,7 +61,7 @@ contract TarochiSale is OwnableUpgradeable, UUPSUpgradeable {
 
         uint256 tokenId = TarochiSeasonPassNft(nftAddress).mint(receiverAddress, "");
 
-        emit BuyNFT(receiverAddress, msg.sender, address(0), price, tokenId);
+        emit BuyNFT(receiverAddress, msg.sender, address(0), msg.value, tokenId, referrer);
 
         return tokenId;
     }
@@ -78,9 +69,12 @@ contract TarochiSale is OwnableUpgradeable, UUPSUpgradeable {
     /// @dev Purchases NFT for address `receiverAddress`, paying required price in supported ERC20 tokens.
     /// This function calls the `mint` function on the `AnnotatedMintNft` contract.
     /// Emits the `BuyNFT` event.
-    function buyNftErc20(IERC20 _tokenAddress, address receiverAddress, address referrer) public returns (uint256) {
-        require(msg.sender != referrer, "TarochiSale: cannot refer yourself");
-        (uint256 price, uint256 referrerReward) = getPriceAndRefererReward(nftErc20Price, referrer);
+    function buyNftErc20(IERC20 _tokenAddress, uint256 tokenAmount, address receiverAddress, address referrer)
+        public
+        returns (uint256)
+    {
+        require(msg.sender != referrer && receiverAddress != referrer, "TarochiSale: cannot refer yourself or receiver");
+        uint256 referrerReward = getReferrerReward(tokenAmount, referrer);
         require(tokenIsWhitelisted(_tokenAddress), "TarochiSale: token not whitelisted");
         require(receiverAddress != address(0), "TarochiSale: zero receiver address");
 
@@ -89,29 +83,18 @@ contract TarochiSale is OwnableUpgradeable, UUPSUpgradeable {
             emit ReferrerReward(referrer, msg.sender, address(_tokenAddress), referrerReward);
         }
 
-        IERC20(_tokenAddress).transferFrom(msg.sender, address(this), price - referrerReward);
+        IERC20(_tokenAddress).transferFrom(msg.sender, address(this), tokenAmount - referrerReward);
 
         uint256 tokenId = TarochiSeasonPassNft(nftAddress).mint(receiverAddress, "");
 
-        emit BuyNFT(receiverAddress, msg.sender, address(_tokenAddress), price, tokenId);
+        emit BuyNFT(receiverAddress, msg.sender, address(_tokenAddress), tokenAmount, tokenId, referrer);
 
         return tokenId;
     }
 
-    /// @dev Computes the discounted price and referrer reward portion from that price, if referrer is not address(0).
-    /// Discount is 10%, and then 5% from the result is the referrer reward.
-    function getPriceAndRefererReward(uint256 originalPrice, address referrer)
-        public
-        pure
-        returns (uint256 price, uint256 referrerReward)
-    {
-        if (referrer == address(0)) {
-            price = originalPrice;
-            referrerReward = 0;
-        } else {
-            price = ((originalPrice * 9) / 10);
-            referrerReward = price / 20;
-        }
+    /// @dev Computes the 5% referrer reward portion from paid price, if referrer is not address(0).
+    function getReferrerReward(uint256 price, address referrer) public pure returns (uint256 referrerReward) {
+        return referrer == address(0) ? 0 : price / 20;
     }
 
     /// @dev Returns an array of token addresses that are accepted as payment in the NFT purchase.
@@ -127,24 +110,6 @@ contract TarochiSale is OwnableUpgradeable, UUPSUpgradeable {
         }
 
         return false;
-    }
-
-    /// @dev Changes the price in native tokens to `_nftNativePrice`.
-    /// Callable only by the contract owner.
-    function updateNativePrice(uint256 _nftNativePrice) external onlyOwner {
-        uint256 oldPrice = nftNativePrice;
-        nftNativePrice = _nftNativePrice;
-
-        emit UpdateNativePrice(oldPrice, _nftNativePrice);
-    }
-
-    /// @dev Changes the price in accepted ERC20 tokens to `_nftErc20Price`.
-    /// Callable only by the contract owner.
-    function updateErc20Price(uint256 _nftErc20Price) external onlyOwner {
-        uint256 oldPrice = nftErc20Price;
-        nftErc20Price = _nftErc20Price;
-
-        emit UpdateErc20Price(oldPrice, _nftErc20Price);
     }
 
     /// @dev Removes `_token` from the list of `supportedCurrencies`.
