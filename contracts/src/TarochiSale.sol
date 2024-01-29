@@ -50,7 +50,7 @@ contract TarochiSale is OwnableUpgradeable, UUPSUpgradeable {
     /// This function calls the `mint` function on the `AnnotatedMintNft` contract.
     /// Emits the `BuyNFT` event.
     function buyNftNative(address receiverAddress, address payable referrer) public payable returns (uint256) {
-        require(msg.sender != referrer, "TarochiSale: cannot refer yourself");
+        require(msg.sender != referrer && receiverAddress != referrer, "TarochiSale: cannot refer yourself or receiver");
         uint256 referrerReward = getReferrerReward(msg.value, referrer);
         require(receiverAddress != address(0), "TarochiSale: zero receiver address");
 
@@ -73,7 +73,7 @@ contract TarochiSale is OwnableUpgradeable, UUPSUpgradeable {
         public
         returns (uint256)
     {
-        require(msg.sender != referrer, "TarochiSale: cannot refer yourself");
+        require(msg.sender != referrer && receiverAddress != referrer, "TarochiSale: cannot refer yourself or receiver");
         uint256 referrerReward = getReferrerReward(tokenAmount, referrer);
         require(tokenIsWhitelisted(_tokenAddress), "TarochiSale: token not whitelisted");
         require(receiverAddress != address(0), "TarochiSale: zero receiver address");
