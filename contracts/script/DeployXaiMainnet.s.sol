@@ -10,26 +10,16 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {Deploy} from "./Deploy.s.sol";
 
 contract DeployXaiMainnet is Deploy {
+    address[] supportedCurrencies;
+
     function run() external {
         // Define sale price in native gas tokens
-        uint256 nftNativePrice = 0.001 ether;
+        uint256 nftNativePrice = vm.envUint("DEPLOYMENT_XAI_NATIVE_PRICE");
         // Define sale price in supported ERC20 tokens
-        uint256 nftErc20Price = 100 * 1e6;
+        uint256 nftErc20Price = vm.envUint("DEPLOYMENT_XAI_ERC20_PRICE");
         // Define supported ERC20 payment tokens
-        IERC20[] memory supportedCurrencies = new IERC20[](0);
-        // Define NFT name
-        string memory nftName = "Tarochi Season 1 Pass";
-        // Define NFT symbol
-        string memory nftSymbol = "TSP1";
-        // Define NFT max supply (unlimited)
-        uint256 nftMaxSupply = type(uint256).max;
-        // Define sale deadline timestamp
-        uint256 mintDeadline = 1707955200; // Thu Feb 15 2024 00:00:00 GMT+0000
+        supportedCurrencies = vm.envOr("DEPLOYMENT_XAI_SUPPORTED_ERC20_TOKENS", ",", supportedCurrencies);
 
-        runCommon(
-            Deploy.DeployParams(
-                nftNativePrice, nftErc20Price, supportedCurrencies, nftName, nftSymbol, nftMaxSupply, mintDeadline
-            )
-        );
+        runCommon(Deploy.DeployParams(nftNativePrice, nftErc20Price, supportedCurrencies));
     }
 }

@@ -12,28 +12,31 @@ import {TarochiSale} from "../src/TarochiSale.sol";
 import {TarochiSeasonPassNft} from "../src/TarochiSeasonPassNft.sol";
 
 contract Deploy is Script {
+    // Define NFT name
+    string nftName = "Tarochi Season 1 Pass";
+    // Define NFT symbol
+    string nftSymbol = "TSP1";
+    // Define NFT max supply (unlimited)
+    uint256 nftMaxSupply = type(uint256).max;
+
     struct DeployParams {
         uint256 nftNativePrice;
         uint256 nftErc20Price;
-        IERC20[] supportedCurrencies;
-        string nftName;
-        string nftSymbol;
-        uint256 nftMaxSupply;
-        uint256 mintDeadline;
+        address[] supportedCurrencies;
     }
 
     function runCommon(DeployParams memory params) internal {
-        address ownerAddress = vm.envAddress("CONTRACT_OWNER_ADDRESS");
-        string memory nftUri = vm.envString("NFT_URI");
+        uint256 mintDeadline = vm.envUint("DEPLOYMENT_SALE_DEADLINE");
+        address ownerAddress = vm.envAddress("DEPLOYMENT_CONTRACT_OWNER_ADDRESS");
+        string memory nftUri = vm.envString("DEPLOYMENT_NFT_URI");
         vm.startBroadcast();
 
         // This is used to achieve deterministic deployment address across EVM chains.
         // The value does not matter, as long as it is invariant.
         bytes32 dummySalt = bytes32(uint256(1));
 
-        TarochiSeasonPassNft nft = new TarochiSeasonPassNft{salt: dummySalt}(
-            params.nftName, params.nftSymbol, params.nftMaxSupply, ownerAddress, params.mintDeadline
-        );
+        TarochiSeasonPassNft nft =
+            new TarochiSeasonPassNft{salt: dummySalt}(nftName, nftSymbol, nftMaxSupply, ownerAddress, mintDeadline);
 
         TarochiSale tarochiSaleImpl = new TarochiSale{salt: dummySalt}();
         bytes memory initializeData = abi.encodeWithSignature(
@@ -45,7 +48,11 @@ contract Deploy is Script {
         );
         ERC1967Proxy tarochiSaleProxy = new ERC1967Proxy{salt: dummySalt}(address(tarochiSaleImpl), initializeData);
 
-        TarochiSale(address(tarochiSaleProxy)).whitelistTokens(params.supportedCurrencies);
+        IERC20[] memory supportedCurrencies = new IERC20[](params.supportedCurrencies.length);
+        for (uint256 i = 0; i < supportedCurrencies.length; i++) {
+            supportedCurrencies[i] = IERC20(params.supportedCurrencies[i]);
+        }
+        TarochiSale(address(tarochiSaleProxy)).whitelistTokens(supportedCurrencies);
 
         nft.setBaseExtension(nftUri);
         nft.setMinter(address(tarochiSaleProxy));
