@@ -20,6 +20,13 @@ contract TarochiSeasonPassNftTest is Test {
         nft.burn(ownedTokenId);
     }
 
+    function test_CannotMintAfterDeadline() public {
+        uint256 deadline = nft.mintDeadline();
+        vm.warp(deadline);
+        vm.expectRevert("TarochiSeasonPassNft: minting concluded");
+        nft.mint(address(this), "");
+    }
+
     function test_CannotTransfer() public {
         vm.expectRevert("TarochiSeasonPassNft: NFT is soulbound - cannot be transferred");
         nft.transferFrom(address(this), makeAddr("alice"), ownedTokenId);
