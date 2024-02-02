@@ -20,8 +20,6 @@ contract Deploy is Script {
     uint256 nftMaxSupply = type(uint256).max;
 
     struct DeployParams {
-        uint256 nftNativePrice;
-        uint256 nftErc20Price;
         address[] supportedCurrencies;
     }
 
@@ -39,13 +37,7 @@ contract Deploy is Script {
             new TarochiSeasonPassNft{salt: dummySalt}(nftName, nftSymbol, nftMaxSupply, ownerAddress, mintDeadline);
 
         TarochiSale tarochiSaleImpl = new TarochiSale{salt: dummySalt}();
-        bytes memory initializeData = abi.encodeWithSignature(
-            "initialize(address,address,uint256,uint256)",
-            ownerAddress,
-            address(nft),
-            params.nftNativePrice,
-            params.nftErc20Price
-        );
+        bytes memory initializeData = abi.encodeWithSignature("initialize(address,address)", ownerAddress, address(nft));
         ERC1967Proxy tarochiSaleProxy = new ERC1967Proxy{salt: dummySalt}(address(tarochiSaleImpl), initializeData);
 
         IERC20[] memory supportedCurrencies = new IERC20[](params.supportedCurrencies.length);

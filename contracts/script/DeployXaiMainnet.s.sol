@@ -13,13 +13,9 @@ contract DeployXaiMainnet is Deploy {
     address[] supportedCurrencies;
 
     function run() external {
-        // Define sale price in native gas tokens
-        uint256 nftNativePrice = vm.envUint("DEPLOYMENT_XAI_NATIVE_PRICE");
-        // Define sale price in supported ERC20 tokens
-        uint256 nftErc20Price = vm.envUint("DEPLOYMENT_XAI_ERC20_PRICE");
         // Define supported ERC20 payment tokens
         supportedCurrencies = vm.envOr("DEPLOYMENT_XAI_SUPPORTED_ERC20_TOKENS", ",", supportedCurrencies);
 
-        runCommon(Deploy.DeployParams(nftNativePrice, nftErc20Price, supportedCurrencies));
+        runCommon(Deploy.DeployParams(supportedCurrencies));
     }
 }
