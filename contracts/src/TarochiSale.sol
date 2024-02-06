@@ -39,9 +39,8 @@ contract TarochiSale is OwnableUpgradeable, UUPSUpgradeable {
     }
 
     function initialize(address owner, address _nftAddress) public initializer {
-        __Ownable_init();
+        __Ownable_init(owner);
         __UUPSUpgradeable_init();
-        _transferOwnership(owner);
 
         nftAddress = _nftAddress;
     }

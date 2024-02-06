@@ -31,12 +31,6 @@ contract TarochiSeasonPassNft is ITarochiSeasonPassNft, ERC165, ERC721, Ownable 
         _;
     }
 
-    /// @dev Reverts if the `tokenId` does not exist (has not been minted).
-    modifier onlyExistingTokenId(uint256 tokenId) {
-        require(_exists(tokenId), "AnnotatedMintNft: non-existent tokenId");
-        _;
-    }
-
     /// @dev Reverts if `msg.sender` is not the specified token's owner.
     modifier onlyTokenOwner(uint256 tokenId) {
         require(msg.sender == ownerOf(tokenId), "AnnotatedMintNft: not owner");
@@ -47,12 +41,12 @@ contract TarochiSeasonPassNft is ITarochiSeasonPassNft, ERC165, ERC721, Ownable 
     /// Also sets `currentTokenId` to 1, `baseExtension` to `".json"`, and `mintDeadline` to `_mintDeadline`.
     constructor(string memory name, string memory symbol, uint256 supply, address owner, uint256 _mintDeadline)
         ERC721(name, symbol)
+        Ownable(owner)
     {
         maxSupply = supply;
         currentTokenId = 1;
         baseExtension = ".json";
         mintDeadline = _mintDeadline;
-        transferOwnership(owner);
     }
 
     /// @dev Returns true if this contract implements the interface defined by `interfaceID`. See EIP165.
@@ -81,7 +75,7 @@ contract TarochiSeasonPassNft is ITarochiSeasonPassNft, ERC165, ERC721, Ownable 
 
     /// @dev Burns token of ID `_tokenId`. Callable only by the owner of the specified token.
     /// Reverts if `_tokenId` is not existing.
-    function burn(uint256 _tokenId) external onlyExistingTokenId(_tokenId) onlyTokenOwner(_tokenId) {
+    function burn(uint256 _tokenId) external onlyTokenOwner(_tokenId) {
         totalSupply--;
         _burn(_tokenId);
     }
@@ -152,19 +146,16 @@ contract TarochiSeasonPassNft is ITarochiSeasonPassNft, ERC165, ERC721, Ownable 
         emit UpdateMaxSupply(oldMaxSupply, _maxSupply);
     }
 
-    /// @dev Returns true if specified `_tokenId` exists.
-    function exists(uint256 _tokenId) external view returns (bool) {
-        return _exists(_tokenId);
-    }
-
     /// @dev Returns true if `_account` is in the mapping of allowed `minters`.
     function isMinter(address _account) public view returns (bool) {
         return minters[_account];
     }
 
-    function _beforeTokenTransfer(address from, address to, uint256, uint256) internal pure override {
+    function _update(address to, uint256 tokenId, address auth) internal override returns (address) {
+        address from = super._update(to, tokenId, auth);
         require(
             from == address(0) || to == address(0), "TarochiSeasonPassNft: NFT is soulbound - cannot be transferred"
         );
+        return from;
     }
 }

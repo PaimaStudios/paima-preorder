@@ -64,9 +64,6 @@ interface ITarochiSeasonPassNft {
     /// Emits the `UpdateMaxSupply` event.
     function updateMaxSupply(uint256 _maxSupply) external;
 
-    /// @dev Returns true if specified `_tokenId` exists.
-    function exists(uint256 _tokenId) external view returns (bool);
-
     /// @dev Returns true if `_account` is in the mapping of allowed `minters`.
     function isMinter(address _account) external view returns (bool);
 }

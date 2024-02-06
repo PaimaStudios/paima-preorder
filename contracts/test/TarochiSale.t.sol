@@ -47,6 +47,13 @@ contract TarochiSaleTest is Test {
         doge.approve(address(sale), type(uint256).max);
     }
 
+    function test_CorrectInitialization() public {
+        assertEq(sale.owner(), address(this));
+        assertEq(sale.nftAddress(), address(nft));
+        assertEq(sale.getSupportedCurrencies().length, 1);
+        assertEq(address(sale.getSupportedCurrencies()[0]), address(usdc));
+    }
+
     function test_BuyWithNativeWithoutReferral() public {
         address receiver = alice;
         uint256 balance = address(sale).balance;
