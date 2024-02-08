@@ -13,7 +13,7 @@
     "format": "forge fmt",
     "deploy:localhost": "bash -c 'source .env && forge script script/DeployLocalhost.s.sol:DeployLocalhost --broadcast --private-key $LOCALCHAIN_DEPLOYER_PK --fork-url http://localhost:8545'",
     "deploy:xai:testnet": "bash -c 'source .env && forge script script/DeployXaiTestnet.s.sol:DeployXaiTestnet --rpc-url $XAI_TESTNET_RPC --broadcast --private-key $DEPLOYER_PK'",
-    "deploy:xai:mainnet": "bash -c 'source .env && forge script script/DeployXaiMainnet.s.sol:DeployXaiMainnet --rpc-url $XAI_MAINNET_RPC --broadcast --private-key $DEPLOYER_PK --verify --verifier blockscout --verifier-url https://explorer.xai-chain.net/api?'",
+    "deploy:xai:mainnet": "bash -c 'source .env && forge script script/DeployXaiMainnet.s.sol:DeployXaiMainnet --rpc-url $XAI_MAINNET_RPC --gas-estimate-multiplier 200 --broadcast --private-key $DEPLOYER_PK --verify --verifier blockscout --verifier-url https://explorer.xai-chain.net/api?'",
     "deploy:arb:testnet": "bash -c 'source .env && forge script script/DeployArbTestnet.s.sol:DeployArbTestnet --rpc-url $ARB_TESTNET_RPC --broadcast --private-key $DEPLOYER_PK'",
     "deploy:arb:mainnet": "bash -c 'source .env && forge script script/DeployArbMainnet.s.sol:DeployArbMainnet --rpc-url $ARB_MAINNET_RPC --broadcast --private-key $DEPLOYER_PK --verify --etherscan-api-key $ARBISCAN_API_KEY'",
     "test": "forge test -vv"
