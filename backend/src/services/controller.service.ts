@@ -4,9 +4,8 @@ import { Pagination, TarochiSaleData } from '@interfaces';
 class ControllerService {
   constructor() {}
 
-  public async fetchTarochiSaleData(): Promise<TarochiSaleData | null> {
-    const baseRewardsRate = (await SaleDataModel.find().limit(1))[0];
-    return baseRewardsRate;
+  public async fetchTarochiSaleData(): Promise<TarochiSaleData[] | null> {
+    return await SaleDataModel.find();
   }
 
   public static paginate<T>(size: number, page: number, items: any[]): Pagination<T> {
