@@ -128,7 +128,10 @@ class ShinkaiRegistryIndexer {
       } else {
         await SaleDataModel.create(update);
       }
-      logger.info(`Sale data update: New minted count: ${newMinted}`);
+      const otherChainMinted = (await SaleDataModel.findOne({ key: chain === 'arb' ? 'xai' : 'arb' }))?.minted ?? 0;
+      logger.info(
+        `${chain} sale data update: New minted count: ${newMinted}. Total both chains: ${newMinted + otherChainMinted}`
+      );
     } catch (err) {
       throw err;
     }
