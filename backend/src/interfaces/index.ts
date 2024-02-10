@@ -4,33 +4,10 @@ export interface IndexedString {
   _isIndexed: boolean;
   hash: string;
 }
-
-export interface Delegation {
-  delegatee: string;
-  amount: string;
-}
-
 export interface TarochiSaleData {
   key: string;
   minted: number;
   block: number;
-}
-
-export interface BaseRewardsRate {
-  block: number;
-  baseRewardsRate: string;
-}
-
-export interface ClaimHistory {
-  block: number;
-  type: string;
-  identityRaw: string;
-  amount: string;
-}
-
-export interface Profile {
-  owner: string;
-  stakedTokens: string;
 }
 
 export interface SyncConfigModel {
