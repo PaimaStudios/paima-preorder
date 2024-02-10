@@ -67,7 +67,7 @@ class ShinkaiRegistryIndexer {
     ShinkaiRegistryIndexer.tarochiSaleXai.on(ShinkaiRegistryIndexer.BUY_EVENT, this.xaiBuyEventHandler);
   }
 
-  private async buyEventHandler(chain: string, minPrice: BigNumber, price: BigNumber, event: any) {
+  private static async buyEventHandler(chain: string, minPrice: BigNumber, price: BigNumber, event: any) {
     try {
       if (price.lt(minPrice)) {
         return;
@@ -95,7 +95,7 @@ class ShinkaiRegistryIndexer {
       logger.info(`Arbitrum minprice not found! ${paymentToken} ${price}`);
       return;
     }
-    await this.buyEventHandler('arb', minPrice, price, event);
+    await ShinkaiRegistryIndexer.buyEventHandler('arb', minPrice, price, event);
   }
 
   private async xaiBuyEventHandler(
@@ -115,7 +115,7 @@ class ShinkaiRegistryIndexer {
       logger.info(`Xai minprice not found! ${paymentToken} ${price}`);
       return;
     }
-    await this.buyEventHandler('xai', minPrice, price, event);
+    await ShinkaiRegistryIndexer.buyEventHandler('xai', minPrice, price, event);
   }
 
   private static async incrementMintedSaleData(chain: string, block: number) {
