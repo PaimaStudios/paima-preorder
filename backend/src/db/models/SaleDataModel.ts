@@ -9,6 +9,9 @@ const Schema = new mongoose.Schema<TarochiSaleData>({
   minted: {
     type: Number,
   },
+  block: {
+    type: Number,
+  },
 });
 
 export default mongoose.model<TarochiSaleData>('SaleDataModel', Schema);

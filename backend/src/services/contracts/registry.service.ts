@@ -1,3 +1,4 @@
+import { TarochiSaleData } from '@/interfaces';
 import {
   ARB_RPC_URL,
   LAST_SYNCED_BLOCK_SALE_ARB,
@@ -22,6 +23,8 @@ const genesisPrice = {
     ['0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9']: ethers.utils.parseUnits('20', 6),
   },
 };
+const ARB_START_BLOCK = 178712562;
+const XAI_START_BLOCK = 436591;
 
 class ShinkaiRegistryIndexer {
   public static readonly BUY_EVENT: string = 'BuyNFT';
@@ -64,12 +67,12 @@ class ShinkaiRegistryIndexer {
     ShinkaiRegistryIndexer.tarochiSaleXai.on(ShinkaiRegistryIndexer.BUY_EVENT, this.xaiBuyEventHandler);
   }
 
-  private async buyEventHandler(minPrice: BigNumber, price: BigNumber, event: any) {
+  private async buyEventHandler(chain: string, minPrice: BigNumber, price: BigNumber, event: any) {
     try {
       if (price.lt(minPrice)) {
         return;
       }
-      await ShinkaiRegistryIndexer.incrementMintedSaleData();
+      await ShinkaiRegistryIndexer.incrementMintedSaleData(chain, event.blockNumber);
     } catch (err) {
       logger.error(`Failed to respond to event ${event}: ${err}`);
     }
@@ -84,8 +87,15 @@ class ShinkaiRegistryIndexer {
     referrer: string,
     event: any
   ) {
-    const minPrice = genesisPrice.arb[paymentToken];
-    await this.buyEventHandler(minPrice, price, event);
+    let minPrice = genesisPrice.arb[paymentToken] as BigNumber;
+    if (referrer != ADDRESS_ZERO) {
+      minPrice = minPrice.mul(9).div(10);
+    }
+    if (minPrice == null) {
+      logger.info(`Arbitrum minprice not found! ${paymentToken} ${price}`);
+      return;
+    }
+    await this.buyEventHandler('arb', minPrice, price, event);
   }
 
   private async xaiBuyEventHandler(
@@ -97,17 +107,24 @@ class ShinkaiRegistryIndexer {
     referrer: string,
     event: any
   ) {
-    const minPrice = genesisPrice.arb[paymentToken];
-    await this.buyEventHandler(minPrice, price, event);
+    let minPrice = genesisPrice.xai[paymentToken] as BigNumber;
+    if (referrer != ADDRESS_ZERO) {
+      minPrice = minPrice.mul(9).div(10);
+    }
+    if (minPrice == null) {
+      logger.info(`Xai minprice not found! ${paymentToken} ${price}`);
+      return;
+    }
+    await this.buyEventHandler('xai', minPrice, price, event);
   }
 
-  private static async incrementMintedSaleData() {
+  private static async incrementMintedSaleData(chain: string, block: number) {
     try {
-      const existingData = await SaleDataModel.findOne({ key: 'data' });
+      const existingData = await SaleDataModel.findOne({ key: chain });
       const newMinted = (existingData?.minted ?? 0) + 1;
-      const update = { key: 'data', minted: newMinted };
+      const update: TarochiSaleData = { key: chain, minted: newMinted, block };
       if (existingData) {
-        await SaleDataModel.findOneAndUpdate({ key: 'data' }, update);
+        await SaleDataModel.findOneAndUpdate({ key: chain }, update);
       } else {
         await SaleDataModel.create(update);
       }
@@ -124,7 +141,7 @@ class ShinkaiRegistryIndexer {
 
     let latestBlockNumber = await ShinkaiRegistryIndexer.providerArb.getBlockNumber();
 
-    let lastProcessedBlockNumber = syncConfig == null ? 178712562 : Number(syncConfig?.lastSyncedBlock) + 1;
+    let lastProcessedBlockNumber = syncConfig == null ? ARB_START_BLOCK : Number(syncConfig?.lastSyncedBlock) + 1;
 
     logger.info(
       `Syncing TarochiSale contract on Arb. From block #${lastProcessedBlockNumber} to #${latestBlockNumber} for ${tarochiSaleAddress}`
@@ -148,7 +165,7 @@ class ShinkaiRegistryIndexer {
 
     syncConfigFilter = { key: LAST_SYNCED_BLOCK_SALE_XAI, contract: tarochiSaleAddress };
     syncConfig = await SyncConfigModel.findOne(syncConfigFilter);
-    lastProcessedBlockNumber = syncConfig == null ? 436591 : Number(syncConfig?.lastSyncedBlock) + 1;
+    lastProcessedBlockNumber = syncConfig == null ? XAI_START_BLOCK : Number(syncConfig?.lastSyncedBlock) + 1;
     latestBlockNumber = await ShinkaiRegistryIndexer.providerXai.getBlockNumber();
 
     logger.info(

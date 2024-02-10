@@ -13,6 +13,7 @@ export interface Delegation {
 export interface TarochiSaleData {
   key: string;
   minted: number;
+  block: number;
 }
 
 export interface BaseRewardsRate {
