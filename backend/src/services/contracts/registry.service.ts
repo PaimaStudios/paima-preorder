@@ -1,19 +1,22 @@
-import { TarochiSaleData } from '@/interfaces';
+import { TarochiChain, TarochiSaleAggregatedData } from '@/interfaces';
 import {
   ARB_RPC_URL,
   LAST_SYNCED_BLOCK_SALE_ARB,
   LAST_SYNCED_BLOCK_SALE_XAI,
+  NFTS_MAX_SUPPLY,
+  NFTS_SOLD_STARTING_POINT,
   TAROCHI_SALE_ADDRESS,
+  WHITELIST_END_TIMESTAMP,
   XAI_RPC_URL,
 } from '@config';
-import { SaleDataModel, SyncConfigModel } from '@db';
+import { SaleAggregatedDataModel, SalePurchasesModel, SyncConfigModel } from '@db';
 import { Provider } from '@ethersproject/abstract-provider';
 import { TarochiSale } from '@typechain';
 import { logger, newContract } from '@utils';
 import { BigNumber, Contract, ethers, providers } from 'ethers';
 
 const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
-const genesisPrice = {
+const genesisPrice: Record<TarochiChain, Record<string, BigNumber>> = {
   xai: {
     [ADDRESS_ZERO]: ethers.utils.parseUnits('23.786869', 18),
   },
@@ -21,6 +24,16 @@ const genesisPrice = {
     [ADDRESS_ZERO]: ethers.utils.parseUnits('0.008695', 18),
     ['0xaf88d065e77c8cC2239327C5EDb3A432268e5831']: ethers.utils.parseUnits('20', 6),
     ['0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9']: ethers.utils.parseUnits('20', 6),
+  },
+};
+const tgoldPrice: Record<TarochiChain, Record<string, BigNumber>> = {
+  xai: {
+    [ADDRESS_ZERO]: ethers.utils.parseUnits('1.189344', 18),
+  },
+  arb: {
+    [ADDRESS_ZERO]: ethers.utils.parseUnits('0.000435', 18),
+    ['0xaf88d065e77c8cC2239327C5EDb3A432268e5831']: ethers.utils.parseUnits('1', 6),
+    ['0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9']: ethers.utils.parseUnits('1', 6),
   },
 };
 const ARB_START_BLOCK = 178712562;
@@ -54,6 +67,7 @@ class ShinkaiRegistryIndexer {
     ShinkaiRegistryIndexer.providerXai = new providers.StaticJsonRpcProvider(XAI_RPC_URL);
 
     await indexer.syncBlocks();
+    // await indexer.figureOutMintsRefundsAndTgold();
     await indexer.startEventListener();
 
     return indexer;
@@ -67,12 +81,104 @@ class ShinkaiRegistryIndexer {
     ShinkaiRegistryIndexer.tarochiSaleXai.on(ShinkaiRegistryIndexer.BUY_EVENT, this.xaiBuyEventHandler);
   }
 
-  private static async buyEventHandler(chain: string, minPrice: BigNumber, price: BigNumber, event: any) {
+  private async figureOutMintsRefundsAndTgold() {
     try {
-      if (price.lt(minPrice)) {
-        return;
+      const purchasesSorted = await SalePurchasesModel.find().sort('timestamp');
+      logger.info(
+        `Purchases sorted ${purchasesSorted[0].timestamp} to ${purchasesSorted[purchasesSorted.length - 1].timestamp}`
+      );
+      let genesisMintedCounter = NFTS_SOLD_STARTING_POINT;
+      let genesisSoldOut = false;
+      let genesisSoldOutTimestamp = 0;
+      logger.info(`Beginning to process ${purchasesSorted.length} purchases...`);
+      for (const purchaseDoc of purchasesSorted) {
+        const { referrer, chain, paymentToken, price, timestamp } = purchaseDoc;
+
+        purchaseDoc.shouldRefund = false;
+        purchaseDoc.mintGenesisNft = false;
+
+        const priceBN = BigNumber.from(price);
+        const genesisPrices = (chain as TarochiChain) === 'arb' ? genesisPrice.arb : genesisPrice.xai;
+        let minPriceForGenesis = genesisPrices[paymentToken];
+        if (referrer != ADDRESS_ZERO) {
+          minPriceForGenesis = minPriceForGenesis.mul(9).div(10);
+        }
+
+        let goldPacksBought = 0;
+
+        if (!genesisSoldOut) {
+          if (priceBN.gte(minPriceForGenesis)) {
+            genesisMintedCounter++;
+            purchaseDoc.mintGenesisNft = true;
+
+            goldPacksBought += priceBN.sub(minPriceForGenesis).div(tgoldPrice[chain][paymentToken]).toNumber();
+
+            if (timestamp < WHITELIST_END_TIMESTAMP) {
+              goldPacksBought += 2;
+            }
+          }
+        } else {
+          if (priceBN.eq(minPriceForGenesis)) {
+            if (timestamp <= genesisSoldOutTimestamp + 60 * 15) {
+              purchaseDoc.shouldRefund = true;
+              logger.info(`Refunding, timestamp: ${timestamp} is <= ${genesisSoldOutTimestamp + 60 * 15}`);
+            }
+          } else {
+            goldPacksBought += priceBN.div(tgoldPrice[chain][paymentToken]).toNumber();
+          }
+        }
+        purchaseDoc.tgold = goldPacksBought * 2560;
+
+        if (genesisMintedCounter == NFTS_MAX_SUPPLY && !genesisSoldOut) {
+          genesisSoldOut = true;
+          genesisSoldOutTimestamp = timestamp;
+        }
+
+        await purchaseDoc.save();
       }
-      await ShinkaiRegistryIndexer.incrementMintedSaleData(chain, event.blockNumber);
+      logger.info(`Finished updating mintGenesisNft, tgold, and shouldRefund`);
+    } catch (err) {
+      logger.error(`Failed to figure out mints/refunds/tgold: ${err}`);
+    }
+  }
+
+  private static async buyEventHandler(
+    chain: TarochiChain,
+    minPrice: BigNumber,
+    receiver: string,
+    buyer: string,
+    paymentToken: string,
+    price: BigNumber,
+    tokenId: BigNumber,
+    referrer: string,
+    event: any
+  ) {
+    try {
+      if (price.gte(minPrice)) {
+        await ShinkaiRegistryIndexer.incrementMintedSaleData(chain, event.blockNumber);
+      }
+      const currentlyMinted =
+        NFTS_SOLD_STARTING_POINT +
+        (await SaleAggregatedDataModel.find({})).map((d) => d.minted).reduce((prev, curr) => prev + curr, 0);
+      const provider = chain === 'arb' ? ShinkaiRegistryIndexer.providerArb : ShinkaiRegistryIndexer.providerXai;
+      const block = await provider.getBlock(event.blockNumber);
+      const saleData = {
+        chain,
+        receiver,
+        buyer,
+        paymentToken,
+        price,
+        tokenId,
+        referrer,
+        timestamp: block.timestamp,
+        block: event.blockNumber,
+      };
+      if (!!(await SalePurchasesModel.exists(saleData))) {
+        logger.info(`Record already exists, skipping. Buyer ${saleData.buyer} at ${block.timestamp}`);
+      } else {
+        await SalePurchasesModel.create(saleData);
+        logger.info(`${chain} Genesis NFT sold at ${block.timestamp}. Total both chains: ${currentlyMinted}`);
+      }
     } catch (err) {
       logger.error(`Failed to respond to event ${event}: ${err}`);
     }
@@ -95,7 +201,17 @@ class ShinkaiRegistryIndexer {
       logger.info(`Arbitrum minprice not found! ${paymentToken} ${price}`);
       return;
     }
-    await ShinkaiRegistryIndexer.buyEventHandler('arb', minPrice, price, event);
+    await ShinkaiRegistryIndexer.buyEventHandler(
+      'arb',
+      minPrice,
+      receiver,
+      buyer,
+      paymentToken,
+      price,
+      tokenId,
+      referrer,
+      event
+    );
   }
 
   private async xaiBuyEventHandler(
@@ -115,23 +231,29 @@ class ShinkaiRegistryIndexer {
       logger.info(`Xai minprice not found! ${paymentToken} ${price}`);
       return;
     }
-    await ShinkaiRegistryIndexer.buyEventHandler('xai', minPrice, price, event);
+    await ShinkaiRegistryIndexer.buyEventHandler(
+      'xai',
+      minPrice,
+      receiver,
+      buyer,
+      paymentToken,
+      price,
+      tokenId,
+      referrer,
+      event
+    );
   }
 
-  private static async incrementMintedSaleData(chain: string, block: number) {
+  private static async incrementMintedSaleData(chain: TarochiChain, block: number) {
     try {
-      const existingData = await SaleDataModel.findOne({ key: chain });
+      const existingData = await SaleAggregatedDataModel.findOne({ key: chain });
       const newMinted = (existingData?.minted ?? 0) + 1;
-      const update: TarochiSaleData = { key: chain, minted: newMinted, block };
+      const update: TarochiSaleAggregatedData = { key: chain, minted: newMinted, block };
       if (existingData) {
-        await SaleDataModel.findOneAndUpdate({ key: chain }, update);
+        await SaleAggregatedDataModel.findOneAndUpdate({ key: chain }, update);
       } else {
-        await SaleDataModel.create(update);
+        await SaleAggregatedDataModel.create(update);
       }
-      const otherChainMinted = (await SaleDataModel.findOne({ key: chain === 'arb' ? 'xai' : 'arb' }))?.minted ?? 0;
-      logger.info(
-        `${chain} sale data update: New minted count: ${newMinted}. Total both chains: ${newMinted + otherChainMinted}`
-      );
     } catch (err) {
       throw err;
     }
@@ -187,7 +309,7 @@ class ShinkaiRegistryIndexer {
   }
 
   private async syncSingleEvent(
-    chain: string,
+    chain: TarochiChain,
     eventName: string,
     lastProcessedBlockNumber: number,
     latestBlockNumber: number,
@@ -208,7 +330,11 @@ class ShinkaiRegistryIndexer {
     return numberOfBlocksSynced;
   }
 
-  private async parseEventsAndUpdateIdentity(chain: string, pastEvents: any[], eventName: string): Promise<number> {
+  private async parseEventsAndUpdateIdentity(
+    chain: TarochiChain,
+    pastEvents: any[],
+    eventName: string
+  ): Promise<number> {
     let blocksSynced = 0;
 
     if (pastEvents.length) {

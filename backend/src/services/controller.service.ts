@@ -1,11 +1,11 @@
-import { SaleDataModel } from '@db';
-import { Pagination, TarochiSaleData } from '@interfaces';
+import { SaleAggregatedDataModel } from '@db';
+import { Pagination, TarochiSaleAggregatedData } from '@interfaces';
 
 class ControllerService {
   constructor() {}
 
-  public async fetchTarochiSaleData(): Promise<TarochiSaleData[] | null> {
-    return await SaleDataModel.find();
+  public async fetchTarochiSaleData(): Promise<TarochiSaleAggregatedData[] | null> {
+    return await SaleAggregatedDataModel.find();
   }
 
   public static paginate<T>(size: number, page: number, items: any[]): Pagination<T> {

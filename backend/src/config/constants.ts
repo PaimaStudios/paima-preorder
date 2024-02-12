@@ -1,2 +1,9 @@
 export const LAST_SYNCED_BLOCK_SALE_ARB = 'LAST_SYNCED_BLOCK_SALE_ARB';
 export const LAST_SYNCED_BLOCK_SALE_XAI = 'LAST_SYNCED_BLOCK_SALE_XAI';
+
+// Because we sold NFTs on Cardano
+export const NFTS_SOLD_STARTING_POINT = 310;
+
+export const NFTS_MAX_SUPPLY = 9001;
+
+export const WHITELIST_END_TIMESTAMP = 1707494400;
