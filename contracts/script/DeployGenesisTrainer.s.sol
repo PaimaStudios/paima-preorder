@@ -13,13 +13,14 @@ contract DeployGenesisTrainer is Script {
 
     function run() external {
         address ownerAddress = vm.envAddress("DEPLOYMENT_CONTRACT_OWNER_ADDRESS");
+        address royaltyAddress = vm.envAddress("DEPLOYMENT_NFT_ROYALTY_ADDRESS");
         vm.startBroadcast();
 
         // This is used to achieve deterministic deployment address across EVM chains.
         // The value does not matter, as long as it is invariant.
         bytes32 dummySalt = bytes32(uint256(1));
 
-        TarochiGenesisTrainer nft = new TarochiGenesisTrainer{salt: dummySalt}(baseURI, ownerAddress);
+        TarochiGenesisTrainer nft = new TarochiGenesisTrainer{salt: dummySalt}(baseURI, ownerAddress, royaltyAddress);
 
         console2.log("Tarochi Genesis Trainer NFT address:", address(nft));
 
