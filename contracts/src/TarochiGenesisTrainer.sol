@@ -2,7 +2,6 @@
 pragma solidity ^0.8.23;
 
 import "erc721a/contracts/ERC721A.sol";
-// import "erc721a/contracts/IERC721A.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/common/ERC2981.sol";
 
@@ -38,8 +37,8 @@ contract TarochiGenesisTrainer is ERC721A, Ownable, ERC2981 {
         _resetTokenRoyalty(tokenId);
     }
 
-    function supportsInterface(bytes4 interfaceId) public view override(ERC2981, ERC721A) returns (bool) {
-        return super.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId) public view override(ERC721A, ERC2981) returns (bool) {
+        return ERC721A.supportsInterface(interfaceId) || ERC2981.supportsInterface(interfaceId);
     }
 
     function _baseURI() internal view override returns (string memory) {
