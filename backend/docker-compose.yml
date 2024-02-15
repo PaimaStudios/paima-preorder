@@ -1,6 +1,6 @@
 version: '3'
 services:
-  shinkai-backend:
+  tarochi-sale-backend:
     build: .
     ports:
       - 11111:11111

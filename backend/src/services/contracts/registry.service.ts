@@ -39,7 +39,7 @@ const tgoldPrice: Record<TarochiChain, Record<string, BigNumber>> = {
 const ARB_START_BLOCK = 178712562;
 const XAI_START_BLOCK = 436591;
 
-class ShinkaiRegistryIndexer {
+class TarochiSaleIndexer {
   public static readonly BUY_EVENT: string = 'BuyNFT';
 
   public static tarochiSaleArb: TarochiSale;
@@ -47,24 +47,16 @@ class ShinkaiRegistryIndexer {
   public static providerArb: Provider;
   public static providerXai: Provider;
 
-  public static async createAsyncAndRun(): Promise<ShinkaiRegistryIndexer> {
+  public static async createAsyncAndRun(): Promise<TarochiSaleIndexer> {
     logger.info(`Initializing Tarochi indexer...`);
 
-    const indexer = new ShinkaiRegistryIndexer();
+    const indexer = new TarochiSaleIndexer();
 
-    ShinkaiRegistryIndexer.tarochiSaleArb = newContract(
-      TAROCHI_SALE_ADDRESS!,
-      ARB_RPC_URL!,
-      'TarochiSale'
-    ) as TarochiSale;
-    ShinkaiRegistryIndexer.tarochiSaleXai = newContract(
-      TAROCHI_SALE_ADDRESS!,
-      XAI_RPC_URL!,
-      'TarochiSale'
-    ) as TarochiSale;
+    TarochiSaleIndexer.tarochiSaleArb = newContract(TAROCHI_SALE_ADDRESS!, ARB_RPC_URL!, 'TarochiSale') as TarochiSale;
+    TarochiSaleIndexer.tarochiSaleXai = newContract(TAROCHI_SALE_ADDRESS!, XAI_RPC_URL!, 'TarochiSale') as TarochiSale;
 
-    ShinkaiRegistryIndexer.providerArb = new providers.StaticJsonRpcProvider(ARB_RPC_URL);
-    ShinkaiRegistryIndexer.providerXai = new providers.StaticJsonRpcProvider(XAI_RPC_URL);
+    TarochiSaleIndexer.providerArb = new providers.StaticJsonRpcProvider(ARB_RPC_URL);
+    TarochiSaleIndexer.providerXai = new providers.StaticJsonRpcProvider(XAI_RPC_URL);
 
     await indexer.syncBlocks();
     // await indexer.figureOutMintsRefundsAndTgold();
@@ -74,11 +66,11 @@ class ShinkaiRegistryIndexer {
   }
 
   private startEventListener() {
-    logger.info(`Listening for event ${ShinkaiRegistryIndexer.BUY_EVENT} on Arbitrum`);
-    ShinkaiRegistryIndexer.tarochiSaleArb.on(ShinkaiRegistryIndexer.BUY_EVENT, this.arbBuyEventHandler);
+    logger.info(`Listening for event ${TarochiSaleIndexer.BUY_EVENT} on Arbitrum`);
+    TarochiSaleIndexer.tarochiSaleArb.on(TarochiSaleIndexer.BUY_EVENT, this.arbBuyEventHandler);
 
-    logger.info(`Listening for event ${ShinkaiRegistryIndexer.BUY_EVENT} on Xai`);
-    ShinkaiRegistryIndexer.tarochiSaleXai.on(ShinkaiRegistryIndexer.BUY_EVENT, this.xaiBuyEventHandler);
+    logger.info(`Listening for event ${TarochiSaleIndexer.BUY_EVENT} on Xai`);
+    TarochiSaleIndexer.tarochiSaleXai.on(TarochiSaleIndexer.BUY_EVENT, this.xaiBuyEventHandler);
   }
 
   private async figureOutMintsRefundsAndTgold() {
@@ -155,12 +147,12 @@ class ShinkaiRegistryIndexer {
   ) {
     try {
       if (price.gte(minPrice)) {
-        await ShinkaiRegistryIndexer.incrementMintedSaleData(chain, event.blockNumber);
+        await TarochiSaleIndexer.incrementMintedSaleData(chain, event.blockNumber);
       }
       const currentlyMinted =
         NFTS_SOLD_STARTING_POINT +
         (await SaleAggregatedDataModel.find({})).map((d) => d.minted).reduce((prev, curr) => prev + curr, 0);
-      const provider = chain === 'arb' ? ShinkaiRegistryIndexer.providerArb : ShinkaiRegistryIndexer.providerXai;
+      const provider = chain === 'arb' ? TarochiSaleIndexer.providerArb : TarochiSaleIndexer.providerXai;
       const block = await provider.getBlock(event.blockNumber);
       const saleData = {
         chain,
@@ -201,7 +193,7 @@ class ShinkaiRegistryIndexer {
       logger.info(`Arbitrum minprice not found! ${paymentToken} ${price}`);
       return;
     }
-    await ShinkaiRegistryIndexer.buyEventHandler(
+    await TarochiSaleIndexer.buyEventHandler(
       'arb',
       minPrice,
       receiver,
@@ -231,7 +223,7 @@ class ShinkaiRegistryIndexer {
       logger.info(`Xai minprice not found! ${paymentToken} ${price}`);
       return;
     }
-    await ShinkaiRegistryIndexer.buyEventHandler(
+    await TarochiSaleIndexer.buyEventHandler(
       'xai',
       minPrice,
       receiver,
@@ -260,11 +252,11 @@ class ShinkaiRegistryIndexer {
   }
 
   public async syncBlocks() {
-    const tarochiSaleAddress = ShinkaiRegistryIndexer.tarochiSaleArb.address;
+    const tarochiSaleAddress = TarochiSaleIndexer.tarochiSaleArb.address;
     let syncConfigFilter = { key: LAST_SYNCED_BLOCK_SALE_ARB, contract: tarochiSaleAddress };
     let syncConfig = await SyncConfigModel.findOne(syncConfigFilter);
 
-    let latestBlockNumber = await ShinkaiRegistryIndexer.providerArb.getBlockNumber();
+    let latestBlockNumber = await TarochiSaleIndexer.providerArb.getBlockNumber();
 
     let lastProcessedBlockNumber = syncConfig == null ? ARB_START_BLOCK : Number(syncConfig?.lastSyncedBlock) + 1;
 
@@ -281,17 +273,17 @@ class ShinkaiRegistryIndexer {
     // Sync for `BuyEvent` events
     let numberOfBlocksSynced = await this.syncSingleEvent(
       'arb',
-      ShinkaiRegistryIndexer.BUY_EVENT,
+      TarochiSaleIndexer.BUY_EVENT,
       lastProcessedBlockNumber,
       latestBlockNumber,
-      ShinkaiRegistryIndexer.tarochiSaleArb
+      TarochiSaleIndexer.tarochiSaleArb
     );
-    log(numberOfBlocksSynced, ShinkaiRegistryIndexer.BUY_EVENT);
+    log(numberOfBlocksSynced, TarochiSaleIndexer.BUY_EVENT);
 
     syncConfigFilter = { key: LAST_SYNCED_BLOCK_SALE_XAI, contract: tarochiSaleAddress };
     syncConfig = await SyncConfigModel.findOne(syncConfigFilter);
     lastProcessedBlockNumber = syncConfig == null ? XAI_START_BLOCK : Number(syncConfig?.lastSyncedBlock) + 1;
-    latestBlockNumber = await ShinkaiRegistryIndexer.providerXai.getBlockNumber();
+    latestBlockNumber = await TarochiSaleIndexer.providerXai.getBlockNumber();
 
     logger.info(
       `Syncing TarochiSale contract on Xai. From block #${lastProcessedBlockNumber} to #${latestBlockNumber} for ${tarochiSaleAddress}`
@@ -300,12 +292,12 @@ class ShinkaiRegistryIndexer {
     // Sync for `BuyEvent` events
     numberOfBlocksSynced = await this.syncSingleEvent(
       'xai',
-      ShinkaiRegistryIndexer.BUY_EVENT,
+      TarochiSaleIndexer.BUY_EVENT,
       lastProcessedBlockNumber,
       latestBlockNumber,
-      ShinkaiRegistryIndexer.tarochiSaleXai
+      TarochiSaleIndexer.tarochiSaleXai
     );
-    log(numberOfBlocksSynced, ShinkaiRegistryIndexer.BUY_EVENT);
+    log(numberOfBlocksSynced, TarochiSaleIndexer.BUY_EVENT);
   }
 
   private async syncSingleEvent(
@@ -341,16 +333,16 @@ class ShinkaiRegistryIndexer {
       for (const event of pastEvents) {
         if (event.args) {
           switch (eventName) {
-            case ShinkaiRegistryIndexer.BUY_EVENT: {
+            case TarochiSaleIndexer.BUY_EVENT: {
               const { receiver, buyer, paymentToken, price, tokenId, referrer } = event.args;
 
               await Promise.all([
                 chain === 'arb'
                   ? this.arbBuyEventHandler(receiver, buyer, paymentToken, price, tokenId, referrer, event)
                   : this.xaiBuyEventHandler(receiver, buyer, paymentToken, price, tokenId, referrer, event),
-                ShinkaiRegistryIndexer.updateSyncConfig(event.blockNumber, {
+                TarochiSaleIndexer.updateSyncConfig(event.blockNumber, {
                   key: chain === 'arb' ? LAST_SYNCED_BLOCK_SALE_ARB : LAST_SYNCED_BLOCK_SALE_XAI,
-                  contract: ShinkaiRegistryIndexer.tarochiSaleArb.address,
+                  contract: TarochiSaleIndexer.tarochiSaleArb.address,
                 }),
               ]);
 
@@ -384,4 +376,4 @@ class ShinkaiRegistryIndexer {
   }
 }
 
-export default ShinkaiRegistryIndexer;
+export default TarochiSaleIndexer;

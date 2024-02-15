@@ -12,7 +12,7 @@ RUN npm run build --ignore-scripts \
 
 ########################################################
 
-FROM gcr.io/distroless/nodejs:18 AS shinkai-contracts-backend
+FROM gcr.io/distroless/nodejs:18 AS tarochi-sale-backend
 ENV TZ=Etc/UTC \
     NODE_ENV=production
 ARG APP=/app
