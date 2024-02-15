@@ -1,0 +1,49 @@
+{
+  "ts-node": {
+    // Do not forget to `npm i -D tsconfig-paths`
+    "require": ["tsconfig-paths/register"]
+  },
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "commonjs",
+    "types": ["jest"],
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["dom", "es6", "es2017", "esnext.asynciterable"],
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "outDir": "./build",
+    "rootDir": "src",
+    "moduleResolution": "node",
+    "removeComments": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["*"],
+      "@dtos/*": ["dtos/*"],
+      "@utils": ["utils"],
+      "@db": ["db"],
+      "@config": ["config"],
+      "@services/*": ["services/*"],
+      "@controller/*": ["controller/*"],
+      "@exceptions/*": ["exceptions/*"],
+      "@middlewares/*": ["middlewares/*"],
+      "@interfaces": ["interfaces"],
+      "@routes/*": ["routes/*"],
+      "@policies": ["policies"],
+      "@typechain": ["typechain"]
+    }
+  },
+  "exclude": ["node_modules"],
+  "include": ["./src/**/*.ts"]
+}

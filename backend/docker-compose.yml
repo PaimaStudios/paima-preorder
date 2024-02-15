@@ -1,0 +1,23 @@
+version: '3'
+services:
+  tarochi-sale-backend:
+    build: .
+    ports:
+      - 11111:11111
+    environment:
+      - TAROCHI_SALE_ADDRESS=${TAROCHI_SALE_ADDRESS}
+      - MONGODB_URL=${MONGODB_URL}
+      - LOG_DIR=${LOG_DIR}
+      - LOG_FORMAT=${LOG_FORMAT}
+      - XAI_RPC_URL=${XAI_RPC_URL}
+      - ARB_RPC_URL=${ARB_RPC_URL}
+      - PORT=${PORT}
+    depends_on:
+      - db
+    restart: unless-stopped
+  db:
+    image: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - /opt/mongo/data:/data/db
