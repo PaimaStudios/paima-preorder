@@ -4,7 +4,8 @@ out = "out"
 libs = ["lib"]
 remappings = [
     '@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/',
-    '@openzeppelin/contracts-upgradeable/=node_modules/@openzeppelin/contracts-upgradeable/'
+    '@openzeppelin/contracts-upgradeable/=node_modules/@openzeppelin/contracts-upgradeable/',
+    'erc721a/=node_modules/erc721a/'
 
 ]
 solc_version = '0.8.23'
