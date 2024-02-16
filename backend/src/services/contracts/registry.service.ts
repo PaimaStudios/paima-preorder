@@ -169,10 +169,10 @@ class TarochiSaleIndexer {
         logger.info(`Record already exists, skipping. Buyer ${saleData.buyer} at ${block.timestamp}`);
       } else {
         await SalePurchasesModel.create(saleData);
-        logger.info(`${chain} Genesis NFT sold at ${block.timestamp}. Total both chains: ${currentlyMinted}`);
+        logger.info(`${chain} Season Pass sold at ${block.timestamp}. Total both chains: ${currentlyMinted}`);
       }
     } catch (err) {
-      logger.error(`Failed to respond to event ${event}: ${err}`);
+      logger.error(`Failed to respond to event ${JSON.stringify(event)}: ${err}`);
     }
   }
 
@@ -258,7 +258,7 @@ class TarochiSaleIndexer {
 
     let latestBlockNumber = await TarochiSaleIndexer.providerArb.getBlockNumber();
 
-    let lastProcessedBlockNumber = syncConfig == null ? ARB_START_BLOCK : Number(syncConfig?.lastSyncedBlock) + 1;
+    let lastProcessedBlockNumber = syncConfig == null ? ARB_START_BLOCK : Number(syncConfig?.lastSyncedBlock);
 
     logger.info(
       `Syncing TarochiSale contract on Arb. From block #${lastProcessedBlockNumber} to #${latestBlockNumber} for ${tarochiSaleAddress}`
@@ -282,7 +282,7 @@ class TarochiSaleIndexer {
 
     syncConfigFilter = { key: LAST_SYNCED_BLOCK_SALE_XAI, contract: tarochiSaleAddress };
     syncConfig = await SyncConfigModel.findOne(syncConfigFilter);
-    lastProcessedBlockNumber = syncConfig == null ? XAI_START_BLOCK : Number(syncConfig?.lastSyncedBlock) + 1;
+    lastProcessedBlockNumber = syncConfig == null ? XAI_START_BLOCK : Number(syncConfig?.lastSyncedBlock);
     latestBlockNumber = await TarochiSaleIndexer.providerXai.getBlockNumber();
 
     logger.info(
