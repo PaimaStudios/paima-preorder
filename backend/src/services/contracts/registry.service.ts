@@ -60,9 +60,9 @@ class TarochiSaleIndexer {
     TarochiSaleIndexer.providerArb = new providers.StaticJsonRpcProvider(ARB_RPC_URL);
     TarochiSaleIndexer.providerXai = new providers.StaticJsonRpcProvider(XAI_RPC_URL);
 
-    await indexer.syncBlocks();
-    // await indexer.figureOutMintsRefundsAndTgold();
-    await indexer.startEventListener();
+    // await indexer.syncBlocks();
+    await indexer.figureOutMintsRefundsAndTgold();
+    // await indexer.startEventListener();
 
     return indexer;
   }
@@ -90,6 +90,8 @@ class TarochiSaleIndexer {
 
         purchaseDoc.shouldRefund = false;
         purchaseDoc.mintGenesisNft = false;
+        purchaseDoc.refundAmount = '';
+        purchaseDoc.tgold = 0;
 
         const priceBN = BigNumber.from(price);
         const genesisPrices = (chain as TarochiChain) === 'arb' ? genesisPrice.arb : genesisPrice.xai;
@@ -99,6 +101,7 @@ class TarochiSaleIndexer {
         }
 
         let goldPacksBought = 0;
+        let priceAfterRefund = priceBN;
 
         if (!genesisSoldOut) {
           if (priceBN.gte(minPriceForGenesis)) {
@@ -112,14 +115,15 @@ class TarochiSaleIndexer {
             }
           }
         } else {
-          if (priceBN.eq(minPriceForGenesis)) {
-            if (timestamp <= genesisSoldOutTimestamp + 60 * 15) {
+          if (priceBN.gte(minPriceForGenesis)) {
+            if (timestamp <= genesisSoldOutTimestamp + 60 * 60 * 4) {
               purchaseDoc.shouldRefund = true;
-              logger.info(`Refunding, timestamp: ${timestamp} is <= ${genesisSoldOutTimestamp + 60 * 15}`);
+              purchaseDoc.refundAmount = minPriceForGenesis.toString();
+              priceAfterRefund = priceAfterRefund.sub(purchaseDoc.refundAmount);
+              logger.info(`Refunding, timestamp: ${timestamp} is <= ${genesisSoldOutTimestamp + 60 * 60 * 4}`);
             }
-          } else {
-            goldPacksBought += priceBN.div(tgoldPrice[chain][paymentToken]).toNumber();
           }
+          goldPacksBought += priceAfterRefund.div(tgoldPrice[chain][paymentToken]).toNumber();
         }
         purchaseDoc.tgold = goldPacksBought * 2560;
 

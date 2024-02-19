@@ -23,6 +23,7 @@ export interface TarochiSalePurchase {
   block: number;
   timestamp: number;
   shouldRefund: boolean;
+  refundAmount: string;
   mintGenesisNft: boolean;
   tgold: number;
 }

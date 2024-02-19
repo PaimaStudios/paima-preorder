@@ -32,6 +32,9 @@ const Schema = new mongoose.Schema<TarochiSalePurchase>({
   shouldRefund: {
     type: Boolean,
   },
+  refundAmount: {
+    type: String,
+  },
   mintGenesisNft: {
     type: Boolean,
   },
