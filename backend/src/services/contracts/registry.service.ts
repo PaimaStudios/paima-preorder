@@ -1,4 +1,4 @@
-import { TarochiChain, TarochiSaleAggregatedData } from '@/interfaces';
+import { TarochiChain } from '@/interfaces';
 import {
   ARB_RPC_URL,
   LAST_SYNCED_BLOCK_SALE_ARB,
@@ -9,7 +9,7 @@ import {
   WHITELIST_END_TIMESTAMP,
   XAI_RPC_URL,
 } from '@config';
-import { SaleAggregatedDataModel, SalePurchasesModel, SyncConfigModel } from '@db';
+import { SalePurchasesModel, SyncConfigModel } from '@db';
 import { Provider } from '@ethersproject/abstract-provider';
 import { TarochiSale } from '@typechain';
 import { logger, newContract } from '@utils';
@@ -37,7 +37,9 @@ const tgoldPrice: Record<TarochiChain, Record<string, BigNumber>> = {
   },
 };
 const ARB_START_BLOCK = 178712562;
+const ARB_END_BLOCK = 181384000; // approximate is okay
 const XAI_START_BLOCK = 436591;
+const XAI_END_BLOCK = 1023643; // approximate is okay
 
 class TarochiSaleIndexer {
   public static readonly BUY_EVENT: string = 'BuyNFT';
@@ -146,12 +148,10 @@ class TarochiSaleIndexer {
     event: any
   ) {
     try {
-      if (price.gte(minPrice)) {
-        await TarochiSaleIndexer.incrementMintedSaleData(chain, event.blockNumber);
+      if (price.lt(tgoldPrice[chain][paymentToken])) {
+        logger.info(`Price lower than tgold, ignoring. Tx hash: ${event.transactionHash}`);
+        return;
       }
-      const currentlyMinted =
-        NFTS_SOLD_STARTING_POINT +
-        (await SaleAggregatedDataModel.find({})).map((d) => d.minted).reduce((prev, curr) => prev + curr, 0);
       const provider = chain === 'arb' ? TarochiSaleIndexer.providerArb : TarochiSaleIndexer.providerXai;
       const block = await provider.getBlock(event.blockNumber);
       const saleData = {
@@ -169,7 +169,7 @@ class TarochiSaleIndexer {
         logger.info(`Record already exists, skipping. Buyer ${saleData.buyer} at ${block.timestamp}`);
       } else {
         await SalePurchasesModel.create(saleData);
-        logger.info(`${chain} Season Pass sold at ${block.timestamp}. Total both chains: ${currentlyMinted}`);
+        logger.info(`${chain} Season Pass sold at ${block.timestamp}, block ${event.blockNumber}.`);
       }
     } catch (err) {
       logger.error(`Failed to respond to event ${JSON.stringify(event)}: ${err}`);
@@ -236,27 +236,12 @@ class TarochiSaleIndexer {
     );
   }
 
-  private static async incrementMintedSaleData(chain: TarochiChain, block: number) {
-    try {
-      const existingData = await SaleAggregatedDataModel.findOne({ key: chain });
-      const newMinted = (existingData?.minted ?? 0) + 1;
-      const update: TarochiSaleAggregatedData = { key: chain, minted: newMinted, block };
-      if (existingData) {
-        await SaleAggregatedDataModel.findOneAndUpdate({ key: chain }, update);
-      } else {
-        await SaleAggregatedDataModel.create(update);
-      }
-    } catch (err) {
-      throw err;
-    }
-  }
-
   public async syncBlocks() {
     const tarochiSaleAddress = TarochiSaleIndexer.tarochiSaleArb.address;
     let syncConfigFilter = { key: LAST_SYNCED_BLOCK_SALE_ARB, contract: tarochiSaleAddress };
     let syncConfig = await SyncConfigModel.findOne(syncConfigFilter);
 
-    let latestBlockNumber = await TarochiSaleIndexer.providerArb.getBlockNumber();
+    let latestBlockNumber = ARB_END_BLOCK;
 
     let lastProcessedBlockNumber = syncConfig == null ? ARB_START_BLOCK : Number(syncConfig?.lastSyncedBlock);
 
@@ -283,7 +268,7 @@ class TarochiSaleIndexer {
     syncConfigFilter = { key: LAST_SYNCED_BLOCK_SALE_XAI, contract: tarochiSaleAddress };
     syncConfig = await SyncConfigModel.findOne(syncConfigFilter);
     lastProcessedBlockNumber = syncConfig == null ? XAI_START_BLOCK : Number(syncConfig?.lastSyncedBlock);
-    latestBlockNumber = await TarochiSaleIndexer.providerXai.getBlockNumber();
+    latestBlockNumber = XAI_END_BLOCK;
 
     logger.info(
       `Syncing TarochiSale contract on Xai. From block #${lastProcessedBlockNumber} to #${latestBlockNumber} for ${tarochiSaleAddress}`
