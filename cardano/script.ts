@@ -461,11 +461,11 @@ const tgoldPrice = 2n; // 2 ADA ~= $1 USD
 const WHITELIST_END_TIMESTAMP = 1707494400000;
 const MINT_SOLD_OUT = 1707605106000;
 const MINT_END = 1708099200000; // the public ends after this time
+const MAX_ADDRESS_MINT = 1000n; // max of $1000 in tgold per address
 
 function getMintInfo(transaction: Transaction): Result {
   let goldPacksBought = 0n; // one pack = $1 = 2560 TGOLD
   let shouldRefund = false; // refund people who tried to buy a Genesis Trainer too close to the mint end
-
 
   const userAda = transaction.amount; // fill in with how much the user sent
   const genesisSoldOut = transaction.timestamp > MINT_SOLD_OUT;
@@ -490,9 +490,15 @@ function getMintInfo(transaction: Transaction): Result {
       goldPacksBought += (userAda / tgoldPrice);
     }
   }
+
+  let refund = shouldRefund ? genesisMintPrice : 0n;
+  if (goldPacksBought > MAX_ADDRESS_MINT) {
+    refund += (goldPacksBought - MAX_ADDRESS_MINT) * tgoldPrice;
+    goldPacksBought = MAX_ADDRESS_MINT;
+  }
   return {
     tgold: goldPacksBought * 2560n,
-    refund: shouldRefund ? genesisMintPrice : 0n
+    refund
   };
 }
 
@@ -507,7 +513,7 @@ const txs =
       address: parts[1],
       amount: BigInt(Math.floor(Number.parseInt(parts[2])))
     }));
-console.log(txs);
+
 const refunds: { address: string, amount: bigint, sheetIndex: number }[] = [];
 const tgolds: { address: string, amount: bigint }[] = [];
 for (const tx of txs) {
