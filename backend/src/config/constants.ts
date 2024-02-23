@@ -7,3 +7,5 @@ export const NFTS_SOLD_STARTING_POINT = 326;
 export const NFTS_MAX_SUPPLY = 9001;
 
 export const WHITELIST_END_TIMESTAMP = 1707494400;
+
+export const TGOLD_MAX_PACKS_PURCHASE = 1000;

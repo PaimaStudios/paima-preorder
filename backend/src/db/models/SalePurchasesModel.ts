@@ -29,9 +29,6 @@ const Schema = new mongoose.Schema<TarochiSalePurchase>({
   timestamp: {
     type: Number,
   },
-  shouldRefund: {
-    type: Boolean,
-  },
   refundAmount: {
     type: String,
   },

@@ -6,6 +6,7 @@ import {
   NFTS_MAX_SUPPLY,
   NFTS_SOLD_STARTING_POINT,
   TAROCHI_SALE_ADDRESS,
+  TGOLD_MAX_PACKS_PURCHASE,
   WHITELIST_END_TIMESTAMP,
   XAI_RPC_URL,
 } from '@config';
@@ -88,9 +89,7 @@ class TarochiSaleIndexer {
       for (const purchaseDoc of purchasesSorted) {
         const { referrer, chain, paymentToken, price, timestamp } = purchaseDoc;
 
-        purchaseDoc.shouldRefund = false;
         purchaseDoc.mintGenesisNft = false;
-        purchaseDoc.refundAmount = '';
         purchaseDoc.tgold = 0;
 
         const priceBN = BigNumber.from(price);
@@ -102,6 +101,7 @@ class TarochiSaleIndexer {
 
         let goldPacksBought = 0;
         let priceAfterRefund = priceBN;
+        let refundAmount = BigNumber.from(0);
 
         if (!genesisSoldOut) {
           if (priceBN.gte(minPriceForGenesis)) {
@@ -117,15 +117,19 @@ class TarochiSaleIndexer {
         } else {
           if (priceBN.gte(minPriceForGenesis)) {
             if (timestamp <= genesisSoldOutTimestamp + 60 * 60 * 4) {
-              purchaseDoc.shouldRefund = true;
-              purchaseDoc.refundAmount = minPriceForGenesis.toString();
+              refundAmount = minPriceForGenesis;
               priceAfterRefund = priceAfterRefund.sub(purchaseDoc.refundAmount);
               logger.info(`Refunding, timestamp: ${timestamp} is <= ${genesisSoldOutTimestamp + 60 * 60 * 4}`);
             }
           }
           goldPacksBought += priceAfterRefund.div(tgoldPrice[chain][paymentToken]).toNumber();
         }
-        purchaseDoc.tgold = goldPacksBought * 2560;
+        purchaseDoc.tgold = Math.min(goldPacksBought, TGOLD_MAX_PACKS_PURCHASE) * 2560;
+        refundAmount = refundAmount.add(
+          tgoldPrice[chain][paymentToken].mul(Math.max(0, goldPacksBought - TGOLD_MAX_PACKS_PURCHASE))
+        );
+
+        purchaseDoc.refundAmount = refundAmount.toString();
 
         if (genesisMintedCounter == NFTS_MAX_SUPPLY && !genesisSoldOut) {
           genesisSoldOut = true;
