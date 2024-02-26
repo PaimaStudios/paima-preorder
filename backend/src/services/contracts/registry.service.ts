@@ -1,3 +1,4 @@
+import { default as BoughtGoldModel } from '@/db/models/BoughtGoldModel';
 import { TarochiChain } from '@/interfaces';
 import {
   ARB_RPC_URL,
@@ -85,6 +86,7 @@ class TarochiSaleIndexer {
       let genesisMintedCounter = NFTS_SOLD_STARTING_POINT;
       let genesisSoldOut = false;
       let genesisSoldOutTimestamp = 0;
+      await BoughtGoldModel.deleteMany({});
       logger.info(`Beginning to process ${purchasesSorted.length} purchases...`);
       for (const purchaseDoc of purchasesSorted) {
         const { referrer, chain, paymentToken, price, timestamp } = purchaseDoc;
@@ -118,18 +120,37 @@ class TarochiSaleIndexer {
           if (priceBN.gte(minPriceForGenesis)) {
             if (timestamp <= genesisSoldOutTimestamp + 60 * 60 * 4) {
               refundAmount = minPriceForGenesis;
-              priceAfterRefund = priceAfterRefund.sub(purchaseDoc.refundAmount);
+              priceAfterRefund = priceAfterRefund.sub(refundAmount);
               logger.info(`Refunding, timestamp: ${timestamp} is <= ${genesisSoldOutTimestamp + 60 * 60 * 4}`);
             }
           }
           goldPacksBought += priceAfterRefund.div(tgoldPrice[chain][paymentToken]).toNumber();
         }
-        purchaseDoc.tgold = Math.min(goldPacksBought, TGOLD_MAX_PACKS_PURCHASE) * 2560;
+
+        const boughtGoldRec = await BoughtGoldModel.findOne({
+          buyer: purchaseDoc.buyer,
+          receiver: purchaseDoc.receiver,
+        });
+        const boughtGoldAlready = boughtGoldRec?.tgold ?? 0;
+
+        purchaseDoc.tgold = Math.min(goldPacksBought, TGOLD_MAX_PACKS_PURCHASE - boughtGoldAlready / 2560) * 2560;
         refundAmount = refundAmount.add(
-          tgoldPrice[chain][paymentToken].mul(Math.max(0, goldPacksBought - TGOLD_MAX_PACKS_PURCHASE))
+          tgoldPrice[chain][paymentToken].mul(
+            Math.max(0, goldPacksBought - (TGOLD_MAX_PACKS_PURCHASE - boughtGoldAlready / 2560))
+          )
         );
 
         purchaseDoc.refundAmount = refundAmount.toString();
+        if (boughtGoldRec) {
+          boughtGoldRec.tgold += purchaseDoc.tgold;
+          await boughtGoldRec.save();
+        } else {
+          await BoughtGoldModel.create({
+            buyer: purchaseDoc.buyer,
+            receiver: purchaseDoc.receiver,
+            tgold: purchaseDoc.tgold,
+          });
+        }
 
         if (genesisMintedCounter == NFTS_MAX_SUPPLY && !genesisSoldOut) {
           genesisSoldOut = true;

@@ -27,6 +27,12 @@ export interface TarochiSalePurchase {
   tgold: number;
 }
 
+export interface TarochiBoughtGold {
+  buyer: string;
+  receiver: string;
+  tgold: number;
+}
+
 export interface SyncConfigModel {
   lastSyncedBlock: number;
   key: string;
