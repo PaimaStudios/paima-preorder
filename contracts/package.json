@@ -19,6 +19,9 @@
     "deploy:genesisnft:localhost": "bash -c 'source .env && forge script script/DeployGenesisTrainer.s.sol:DeployGenesisTrainer --broadcast --private-key $LOCALCHAIN_DEPLOYER_PK --fork-url http://localhost:8545'",
     "deploy:genesisnft:arb:testnet": "bash -c 'source .env && forge script script/DeployGenesisTrainer.s.sol:DeployGenesisTrainer --rpc-url $ARB_TESTNET_RPC --broadcast --private-key $DEPLOYER_PK'",
     "deploy:genesisnft:arb:mainnet": "bash -c 'source .env && forge script script/DeployGenesisTrainer.s.sol:DeployGenesisTrainer --rpc-url $ARB_MAINNET_RPC --broadcast --private-key $DEPLOYER_PK --verify --etherscan-api-key $ARBISCAN_API_KEY'",
+    "deploy:monstersnft:localhost": "bash -c 'source .env && forge script script/DeployTarochiMonsters.s.sol:DeployTarochiMonsters --broadcast --private-key $LOCALCHAIN_DEPLOYER_PK --fork-url http://localhost:8545'",
+    "deploy:monstersnft:arb:testnet": "bash -c 'source .env && forge script script/DeployTarochiMonsters.s.sol:DeployTarochiMonsters --rpc-url $ARB_TESTNET_RPC --broadcast --private-key $DEPLOYER_PK'",
+    "deploy:monstersnft:arb:mainnet": "bash -c 'source .env && forge script script/DeployTarochiMonsters.s.sol:DeployTarochiMonsters --rpc-url $ARB_MAINNET_RPC --broadcast --private-key $DEPLOYER_PK --verify --etherscan-api-key $ARBISCAN_API_KEY'",
     "test": "forge test -vv"
   },
   "author": "",
@@ -26,6 +29,7 @@
   "devDependencies": {
     "@openzeppelin/contracts": "^5.0.1",
     "@openzeppelin/contracts-upgradeable": "^5.0.1",
+    "@paima/evm-contracts": "^1.1.0",
     "erc721a": "^4.2.3"
   }
 }
