@@ -16,6 +16,9 @@
     "deploy:xai:mainnet": "bash -c 'source .env && forge script script/DeployXaiMainnet.s.sol:DeployXaiMainnet --rpc-url $XAI_MAINNET_RPC --gas-estimate-multiplier 200 --broadcast --private-key $DEPLOYER_PK --verify --verifier blockscout --verifier-url https://explorer.xai-chain.net/api?'",
     "deploy:arb:testnet": "bash -c 'source .env && forge script script/DeployArbTestnet.s.sol:DeployArbTestnet --rpc-url $ARB_TESTNET_RPC --broadcast --private-key $DEPLOYER_PK'",
     "deploy:arb:mainnet": "bash -c 'source .env && forge script script/DeployArbMainnet.s.sol:DeployArbMainnet --rpc-url $ARB_MAINNET_RPC --broadcast --private-key $DEPLOYER_PK --verify --etherscan-api-key $ARBISCAN_API_KEY'",
+    "deploy:monster:localhost": "bash -c 'source .env && forge script script/DeployMonsterTrading.s.sol:DeployMonsterTrading --broadcast --private-key $LOCALCHAIN_DEPLOYER_PK --fork-url http://localhost:8545'",
+    "deploy:monster:arb:testnet": "bash -c 'source .env && forge script script/DeployMonsterTrading.s.sol:DeployMonsterTrading --rpc-url $ARB_TESTNET_RPC --broadcast --private-key $DEPLOYER_PK'",
+    "deploy:monster:arb:mainnet": "bash -c 'source .env && forge script script/DeployMonsterTrading.s.sol:DeployMonsterTrading --rpc-url $ARB_MAINNET_RPC --broadcast --private-key $DEPLOYER_PK --verify --etherscan-api-key $ARBISCAN_API_KEY'",
     "deploy:genesisnft:localhost": "bash -c 'source .env && forge script script/DeployGenesisTrainer.s.sol:DeployGenesisTrainer --broadcast --private-key $LOCALCHAIN_DEPLOYER_PK --fork-url http://localhost:8545'",
     "deploy:genesisnft:arb:testnet": "bash -c 'source .env && forge script script/DeployGenesisTrainer.s.sol:DeployGenesisTrainer --rpc-url $ARB_TESTNET_RPC --broadcast --private-key $DEPLOYER_PK'",
     "deploy:genesisnft:arb:mainnet": "bash -c 'source .env && forge script script/DeployGenesisTrainer.s.sol:DeployGenesisTrainer --rpc-url $ARB_MAINNET_RPC --broadcast --private-key $DEPLOYER_PK --verify --etherscan-api-key $ARBISCAN_API_KEY'",
@@ -26,6 +29,7 @@
   "devDependencies": {
     "@openzeppelin/contracts": "^5.0.1",
     "@openzeppelin/contracts-upgradeable": "^5.0.1",
-    "erc721a": "^4.2.3"
+    "erc721a": "^4.2.3",
+    "@paima/evm-contracts": "2.0.0"
   }
 }
