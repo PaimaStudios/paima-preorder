@@ -19,6 +19,9 @@
     "deploy:monster:localhost": "bash -c 'source .env && forge script script/DeployMonsterTrading.s.sol:DeployMonsterTrading --broadcast --private-key $LOCALCHAIN_DEPLOYER_PK --fork-url http://localhost:8545'",
     "deploy:monster:arb:testnet": "bash -c 'source .env && forge script script/DeployMonsterTrading.s.sol:DeployMonsterTrading --rpc-url $ARB_TESTNET_RPC --broadcast --private-key $DEPLOYER_PK'",
     "deploy:monster:arb:mainnet": "bash -c 'source .env && forge script script/DeployMonsterTrading.s.sol:DeployMonsterTrading --rpc-url $ARB_MAINNET_RPC --broadcast --private-key $DEPLOYER_PK --verify --etherscan-api-key $ARBISCAN_API_KEY'",
+    "deploy:tgold:localhost": "bash -c 'source .env && forge script script/DeployGoldTrading.s.sol:DeployGoldTrading --broadcast --private-key $LOCALCHAIN_DEPLOYER_PK --fork-url http://localhost:8545'",
+    "deploy:tgold:arb:testnet": "bash -c 'source .env && forge script script/DeployGoldTrading.s.sol:DeployGoldTrading --rpc-url $ARB_TESTNET_RPC --broadcast --private-key $DEPLOYER_PK'",
+    "deploy:tgold:arb:mainnet": "bash -c 'source .env && forge script script/DeployGoldTrading.s.sol:DeployGoldTrading --rpc-url $ARB_MAINNET_RPC --broadcast --private-key $DEPLOYER_PK --verify --etherscan-api-key $ARBISCAN_API_KEY'",
     "deploy:genesisnft:localhost": "bash -c 'source .env && forge script script/DeployGenesisTrainer.s.sol:DeployGenesisTrainer --broadcast --private-key $LOCALCHAIN_DEPLOYER_PK --fork-url http://localhost:8545'",
     "deploy:genesisnft:arb:testnet": "bash -c 'source .env && forge script script/DeployGenesisTrainer.s.sol:DeployGenesisTrainer --rpc-url $ARB_TESTNET_RPC --broadcast --private-key $DEPLOYER_PK'",
     "deploy:genesisnft:arb:mainnet": "bash -c 'source .env && forge script script/DeployGenesisTrainer.s.sol:DeployGenesisTrainer --rpc-url $ARB_MAINNET_RPC --broadcast --private-key $DEPLOYER_PK --verify --etherscan-api-key $ARBISCAN_API_KEY'",
@@ -30,6 +33,8 @@
     "@openzeppelin/contracts": "^5.0.1",
     "@openzeppelin/contracts-upgradeable": "^5.0.1",
     "erc721a": "^4.2.3",
-    "@paima/evm-contracts": "2.0.0"
-  }
+    "paima-evm-contracts-v2": "npm:@paima/evm-contracts@2.0.0",
+    "paima-evm-contracts-v3": "npm:@paima/evm-contracts@3.0.0"
+  },
+  "packageManager": "yarn@4.1.1"
 }
