@@ -25,6 +25,9 @@
     "deploy:genesisnft:localhost": "bash -c 'source .env && forge script script/DeployGenesisTrainer.s.sol:DeployGenesisTrainer --broadcast --private-key $LOCALCHAIN_DEPLOYER_PK --fork-url http://localhost:8545'",
     "deploy:genesisnft:arb:testnet": "bash -c 'source .env && forge script script/DeployGenesisTrainer.s.sol:DeployGenesisTrainer --rpc-url $ARB_TESTNET_RPC --broadcast --private-key $DEPLOYER_PK'",
     "deploy:genesisnft:arb:mainnet": "bash -c 'source .env && forge script script/DeployGenesisTrainer.s.sol:DeployGenesisTrainer --rpc-url $ARB_MAINNET_RPC --broadcast --private-key $DEPLOYER_PK --verify --etherscan-api-key $ARBISCAN_API_KEY'",
+    "deploy:orderbook:localhost": "bash -c 'source .env && forge script script/DeployOrderbook.s.sol:DeployOrderbookDex --broadcast --private-key $LOCALCHAIN_DEPLOYER_PK --fork-url http://localhost:8545'",
+    "deploy:orderbook:arb:testnet": "bash -c 'source .env && forge script script/DeployOrderbook.s.sol:DeployOrderbookDex --rpc-url $ARB_TESTNET_RPC --broadcast --private-key $DEPLOYER_PK'",
+    "deploy:orderbook:arb:mainnet": "bash -c 'source .env && forge script script/DeployOrderbook.s.sol:DeployOrderbookDex --rpc-url $ARB_MAINNET_RPC --broadcast --private-key $DEPLOYER_PK --verify --etherscan-api-key $ARBISCAN_API_KEY'",
     "test": "forge test -vv"
   },
   "author": "",
@@ -34,7 +37,7 @@
     "@openzeppelin/contracts-upgradeable": "^5.0.1",
     "erc721a": "^4.2.3",
     "paima-evm-contracts-v2": "npm:@paima/evm-contracts@2.0.0",
-    "paima-evm-contracts-v3": "npm:@paima/evm-contracts@3.0.0"
+    "paima-evm-contracts-v3": "npm:@paima/evm-contracts@3.1.0"
   },
   "packageManager": "yarn@4.1.1"
 }
