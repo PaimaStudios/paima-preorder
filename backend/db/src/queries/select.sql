@@ -1,0 +1,28 @@
+/*
+  @name getUser
+*/
+SELECT * FROM launchpad_users
+WHERE launchpad = :launchpad! AND wallet = :wallet!
+;
+
+/*
+  @name getParticipations
+*/
+SELECT * FROM launchpad_participations
+WHERE launchpad = :launchpad! AND wallet = :wallet!
+ORDER BY blockHeight
+;
+
+/*
+  @name getParticipatedAmountTotal
+*/
+SELECT SUM(paymentAmount::DECIMAL) FROM launchpad_participations
+WHERE launchpad = :launchpad! AND wallet = :wallet! AND paymentToken = :paymentToken!
+;
+
+/*
+  @name getUserItems
+*/
+SELECT * FROM launchpad_user_items
+WHERE launchpad = :launchpad! AND wallet = :wallet!
+;
