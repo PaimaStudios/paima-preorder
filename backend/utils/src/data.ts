@@ -5,6 +5,7 @@ const launchpadsData: LaunchpadData[] = [
   {
     id: '0xCafac3dD18aC6c6e92c921884f9E4176737C052c',
     name: 'Test Launchpad 1',
+    referralDiscountBps: 100,
     items: [
       {
         id: '1',
@@ -13,6 +14,7 @@ const launchpadsData: LaunchpadData[] = [
           [ZERO_ADDRESS]: '10000000000000',
           '0xusdc': '34681800000000000',
         },
+        referralDiscountBps: 500,
       },
       {
         id: '2',
@@ -20,6 +22,14 @@ const launchpadsData: LaunchpadData[] = [
         prices: {
           [ZERO_ADDRESS]: '20000000000000',
           '0xusdc': '69363600000000000',
+        },
+      },
+      {
+        id: '100',
+        name: 'Free Item X',
+        freeAt: {
+          [ZERO_ADDRESS]: '100000000000000',
+          '0xusdc': '346818000000000000',
         },
       },
     ],

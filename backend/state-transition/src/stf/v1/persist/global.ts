@@ -17,7 +17,7 @@ import {
 } from '@game/db';
 import type { BuyItemsInput } from '../types';
 import launchpadsData from '@game/utils/src/data';
-import type { LaunchpadData } from '@game/utils';
+import { ZERO_ADDRESS, type LaunchpadData } from '@game/utils';
 
 // todo: there's a bug that if you restart paima engine, it will start processing the event two times,
 // which creates problems when comparing already contributed amount with the total price of items bought
@@ -69,7 +69,7 @@ export async function buyItems(params: {
   let sqlUpdates = [
     persistUser(inputData, launchpadAddress, participationValid),
     persistParticipation(inputData, launchpadAddress, txHash, blockHeight),
-    removeUserItems(inputData.payload.receiver.toLowerCase()),
+    removeUserItems(inputData.payload.receiver.toLowerCase(), launchpadAddress),
   ];
 
   if (createUserItemsSqlUpdate) {
@@ -118,8 +118,8 @@ function persistParticipation(
   return [insertParticipation, params];
 }
 
-function removeUserItems(wallet: WalletAddress): SQLUpdate {
-  const params: IDeleteUserItemsParams = { wallet };
+function removeUserItems(wallet: WalletAddress, launchpadAddress: string): SQLUpdate {
+  const params: IDeleteUserItemsParams = { wallet, launchpad: launchpadAddress };
 
   return [deleteUserItems, params];
 }
@@ -135,21 +135,42 @@ function createUserItems(
     return null;
   }
 
-  const itemsPrices = itemsIds.map(
-    itemId =>
-      launchpadData.items.find(item => item.id === itemId)?.prices?.[inputData.payload.paymentToken]
-  );
-  const itemsPricesDefined = itemsPrices.filter(price => price !== undefined);
-  if (itemsPrices.length !== itemsPricesDefined.length) {
+  let error: string | null = null;
+  let totalCost = 0n;
+  let totalFreeItemsValue = 0n;
+  itemsIds.forEach((itemId, index) => {
+    const launchpadDataItem = launchpadData.items.find(item => item.id === itemId);
+    if (!launchpadDataItem) {
+      error = `Item with id ${itemId} not found in launchpad data`;
+      return;
+    }
+    if ('prices' in launchpadDataItem) {
+      let itemCost = BigInt(launchpadDataItem.prices[inputData.payload.paymentToken]);
+      if (inputData.payload.referrer !== ZERO_ADDRESS) {
+        const itemReferralDiscountBps =
+          launchpadDataItem.referralDiscountBps ?? launchpadData.referralDiscountBps ?? 0;
+        itemCost -= (itemCost * BigInt(itemReferralDiscountBps)) / 10000n;
+      }
+      const itemQuantityCost = itemCost * BigInt(itemsQuantities[index]);
+      totalCost += itemQuantityCost;
+    } else if ('freeAt' in launchpadDataItem) {
+      const itemQuantityValue =
+        BigInt(launchpadDataItem.freeAt[inputData.payload.paymentToken]) *
+        BigInt(itemsQuantities[index]);
+      totalFreeItemsValue += itemQuantityValue;
+    }
+  });
+  if (error) {
+    console.log(error);
     return null;
   }
 
-  const totalItemsCost = itemsIds.reduce(
-    (total, itemId, index) =>
-      total + BigInt(itemsQuantities[index]) * BigInt(itemsPricesDefined[index]),
-    0n
-  );
-  if (BigInt(inputData.payload.amount) + participatedAmountTotal !== totalItemsCost) {
+  const contributedTotal = participatedAmountTotal + BigInt(inputData.payload.amount);
+  if (contributedTotal !== totalCost) {
+    return null;
+  }
+  // todo: check totalFreeItemsValue against contributedTotal (price after discount) or against price before discount?
+  if (totalFreeItemsValue > contributedTotal) {
     return null;
   }
 

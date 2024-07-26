@@ -1,4 +1,6 @@
-/* @name deleteUserItems */
+/*
+  @name deleteUserItems
+*/
 DELETE FROM launchpad_user_items
-WHERE launchpad = :launchpad AND wallet = :wallet!
+WHERE launchpad = :launchpad! AND wallet = :wallet!
 ;

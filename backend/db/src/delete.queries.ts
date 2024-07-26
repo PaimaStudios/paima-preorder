@@ -3,7 +3,7 @@ import { PreparedQuery } from '@pgtyped/runtime';
 
 /** 'DeleteUserItems' parameters type */
 export interface IDeleteUserItemsParams {
-  launchpad?: string | null | void;
+  launchpad: string;
   wallet: string;
 }
 
@@ -16,13 +16,13 @@ export interface IDeleteUserItemsQuery {
   result: IDeleteUserItemsResult;
 }
 
-const deleteUserItemsIR: any = {"usedParamSet":{"launchpad":true,"wallet":true},"params":[{"name":"launchpad","required":false,"transform":{"type":"scalar"},"locs":[{"a":51,"b":60}]},{"name":"wallet","required":true,"transform":{"type":"scalar"},"locs":[{"a":75,"b":82}]}],"statement":"DELETE FROM launchpad_user_items\nWHERE launchpad = :launchpad AND wallet = :wallet!"};
+const deleteUserItemsIR: any = {"usedParamSet":{"launchpad":true,"wallet":true},"params":[{"name":"launchpad","required":true,"transform":{"type":"scalar"},"locs":[{"a":51,"b":61}]},{"name":"wallet","required":true,"transform":{"type":"scalar"},"locs":[{"a":76,"b":83}]}],"statement":"DELETE FROM launchpad_user_items\nWHERE launchpad = :launchpad! AND wallet = :wallet!"};
 
 /**
  * Query generated from SQL:
  * ```
  * DELETE FROM launchpad_user_items
- * WHERE launchpad = :launchpad AND wallet = :wallet!
+ * WHERE launchpad = :launchpad! AND wallet = :wallet!
  * ```
  */
 export const deleteUserItems = new PreparedQuery<IDeleteUserItemsParams,IDeleteUserItemsResult>(deleteUserItemsIR);
