@@ -47,6 +47,10 @@ this-template
 ../.env
 ```
 
+### WARNING
+
+There's a bug that if START_BLOCKHEIGHT is not 0 and you restart Paima Engine, it will duplicate the dynamic extension, causing processing the events two times, creating problems when comparing already contributed amount with the total price of items bought. Bug has been fixed in https://github.com/PaimaStudios/paima-engine/pull/399 but not yet released as of time of writing.
+
 ## Environment Setup
 
 Config file `.env.localhost` is created during `npm run initialize` in the parent folder, based on `.env.example` in this project. This is an empty file that you need to fill in with your specific values, before running Paima Engine.

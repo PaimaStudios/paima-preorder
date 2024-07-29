@@ -2,11 +2,17 @@ import { PaimaParser } from '@paima/sdk/concise';
 import type { ParsedSubmittedInput } from './types';
 
 const myGrammar = `
-        boughtItems        = boughtItems|payload
+        boughtItems = boughtItems|payload
+        deployed = deployed|payload
 `;
 
 const parserCommands = {
   boughtItems: {
+    payload: (_: string, input: string) => {
+      return JSON.parse(input);
+    },
+  },
+  deployed: {
     payload: (_: string, input: string) => {
       return JSON.parse(input);
     },

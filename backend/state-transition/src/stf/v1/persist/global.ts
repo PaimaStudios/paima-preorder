@@ -19,9 +19,6 @@ import type { BuyItemsInput } from '../types';
 import launchpadsData from '@game/utils/src/data';
 import { ZERO_ADDRESS, type LaunchpadData } from '@game/utils';
 
-// todo: there's a bug that if you restart paima engine, it will start processing the event two times,
-// which creates problems when comparing already contributed amount with the total price of items bought
-
 export async function buyItems(params: {
   inputData: BuyItemsInput;
   txHash: string;

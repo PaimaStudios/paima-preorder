@@ -1,4 +1,4 @@
-export type ParsedSubmittedInput = InvalidInput | BuyItemsInput;
+export type ParsedSubmittedInput = InvalidInput | BuyItemsInput | DeployedInput;
 export interface InvalidInput {
   input: 'invalidString';
 }
@@ -13,5 +13,12 @@ export interface BuyItemsInput {
     referrer: string;
     itemsIds: string[];
     itemsQuantities: string[];
+  };
+}
+
+export interface DeployedInput {
+  input: 'deployed';
+  payload: {
+    launchpad: string;
   };
 }

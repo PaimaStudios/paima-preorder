@@ -34,6 +34,14 @@ export default async function (
         dbConn,
         blockHeight,
       });
+    case 'deployed':
+      if (inputData.realAddress !== SCHEDULED_DATA_ADDRESS) {
+        console.log(
+          `WARNING: Scheduled Events can only be called from paima-engine. Called by ${JSON.stringify(inputData)}`
+        );
+        return [];
+      }
+      return [];
     default:
       return [];
   }
