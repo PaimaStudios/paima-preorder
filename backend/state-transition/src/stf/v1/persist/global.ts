@@ -169,7 +169,6 @@ function createUserItems(
   if (contributedTotal !== totalCost) {
     return null;
   }
-  // todo: check totalFreeItemsValue against contributedTotal (price after discount) or against price before discount?
   if (totalFreeItemsValue > contributedTotal) {
     return null;
   }
