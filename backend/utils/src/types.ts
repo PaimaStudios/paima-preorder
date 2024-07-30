@@ -24,6 +24,11 @@ type ItemType = StandardItem | FreeRewardItem;
 export type LaunchpadData = {
   id: string;
   name: string;
+  // URL-friendly slug of the name
+  slug: string;
+  // Game description displayed in the launchpads list
+  description: string;
+  image?: string;
   items: ItemType[];
   // Default referral discount to the prices of items, expressed in basis points
   referralDiscountBps?: number;
