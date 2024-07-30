@@ -2,6 +2,10 @@
 
 This documentation provides a basic overview of the template. Each module has its own `README` file with more detailed information.
 
+## Usage
+
+Launchpads data is stored in `utils/src/data.ts`. Edit that to add/change offered launchpads.
+
 ## Installation
 
 To install dependencies and perform initial setup, run the following command:
