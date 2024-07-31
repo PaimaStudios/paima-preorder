@@ -13,7 +13,7 @@ const launchpadsData: LaunchpadData[] = [
     referralDiscountBps: 100,
     items: [
       {
-        id: '1',
+        id: 1,
         name: 'Item A',
         description: 'Description of Item A',
         prices: {
@@ -23,7 +23,7 @@ const launchpadsData: LaunchpadData[] = [
         referralDiscountBps: 500,
       },
       {
-        id: '2',
+        id: 2,
         name: 'Item B',
         description: 'Description of Item B',
         prices: {
@@ -32,7 +32,7 @@ const launchpadsData: LaunchpadData[] = [
         },
       },
       {
-        id: '100',
+        id: 100,
         name: 'Free Item X',
         description: 'Description of Free Item X',
         freeAt: {
@@ -41,7 +41,7 @@ const launchpadsData: LaunchpadData[] = [
         },
       },
     ],
-    timestampStartWhitelistSale: 1724743540,
+    timestampStartWhitelistSale: 10,
     timestampStartPublicSale: 1724829940,
     timestampEndSale: 1724916340,
     whitelistedAddresses: ['0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'],
@@ -51,11 +51,11 @@ const launchpadsData: LaunchpadData[] = [
         description: 'Description of Package 1',
         items: [
           {
-            id: '1',
+            id: 1,
             quantity: 1,
           },
           {
-            id: '2',
+            id: 2,
             quantity: 1,
           },
         ],
@@ -64,11 +64,11 @@ const launchpadsData: LaunchpadData[] = [
         name: 'VIP Package',
         items: [
           {
-            id: '1',
+            id: 1,
             quantity: 10,
           },
           {
-            id: '100',
+            id: 100,
             quantity: 1,
           },
         ],
@@ -83,7 +83,7 @@ const launchpadsData: LaunchpadData[] = [
     image: '/images/game-icon-junglewars.webp',
     items: [
       {
-        id: '1',
+        id: 1,
         name: 'Item A',
         description: 'Description of Item A',
         prices: {
@@ -92,7 +92,7 @@ const launchpadsData: LaunchpadData[] = [
         },
       },
       {
-        id: '2',
+        id: 2,
         name: 'Item B',
         description: 'Description of Item B',
         prices: {
@@ -101,7 +101,7 @@ const launchpadsData: LaunchpadData[] = [
         },
       },
     ],
-    timestampStartWhitelistSale: 1724743540,
+    timestampStartWhitelistSale: 10,
     timestampStartPublicSale: 1724829940,
     timestampEndSale: 1724916340,
     whitelistedAddresses: ['0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'],

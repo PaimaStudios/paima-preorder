@@ -2,9 +2,9 @@ import type { IGetParticipationsResult, IGetUserResult, IGetUserItemsResult } fr
 
 type CommonItemProps = {
   /**
-   * Item ID (numerical string) that will be also emitted in the events
+   * Item ID that will be also emitted in the events
    */
-  id: string;
+  id: number;
   /**
    * Item name to be displayed on the frontend
    */
@@ -101,9 +101,9 @@ export type LaunchpadData = {
      */
     items: {
       /**
-       * Item ID (numerical string) corresponding to the `items` array
+       * Item ID corresponding to the `items` array
        */
-      id: string;
+      id: number;
       /**
        * Quantity of the item in the package
        */

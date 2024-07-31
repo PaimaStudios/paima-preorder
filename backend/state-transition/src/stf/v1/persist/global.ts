@@ -184,7 +184,7 @@ function createUserItems(
   let totalCost = 0n;
   let totalFreeItemsValue = 0n;
   itemsIds.forEach((itemId, index) => {
-    const launchpadDataItem = launchpadData.items.find(item => item.id === itemId);
+    const launchpadDataItem = launchpadData.items.find(item => item.id === Number(itemId));
     if (!launchpadDataItem) {
       error = `Item with id ${itemId} not found in launchpad data`;
       return;
