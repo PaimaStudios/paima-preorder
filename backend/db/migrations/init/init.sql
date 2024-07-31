@@ -17,8 +17,7 @@ CREATE TABLE launchpad_participations (
   txHash TEXT NOT NULL,
   blockHeight INTEGER NOT NULL,
   preconditionsMet BOOLEAN NOT NULL,
-  PRIMARY KEY (launchpad, txHash, wallet),
-  FOREIGN KEY (launchpad, wallet) REFERENCES launchpad_users (launchpad, wallet)
+  PRIMARY KEY (launchpad, txHash, wallet)
 );
 
 CREATE TABLE launchpad_user_items (
