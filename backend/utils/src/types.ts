@@ -41,17 +41,17 @@ type ItemType = StandardItem | FreeRewardItem;
 
 export type LaunchpadData = {
   /**
-   * Launchpad ID, preferably its contract address
+   * URL-friendly slug of the name
    */
-  id: string;
+  slug: string;
+  /**
+   * Launchpad contract address
+   */
+  address: string;
   /**
    * Launchpad name to be displayed on the frontend
    */
   name: string;
-  /**
-   * URL-friendly slug of the name
-   */
-  slug: string;
   /**
    * Game description displayed in the launchpads list
    */

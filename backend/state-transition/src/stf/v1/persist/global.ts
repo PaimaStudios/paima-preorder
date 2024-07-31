@@ -28,7 +28,7 @@ export async function buyItems(params: {
 }): Promise<SQLUpdate[]> {
   const { inputData, txHash, launchpadAddress, dbConn, blockHeight } = params;
   const launchpadData = launchpadsData.find(
-    launchpad => launchpad.id.toLowerCase() === launchpadAddress.toLowerCase()
+    launchpad => launchpad.address.toLowerCase() === launchpadAddress.toLowerCase()
   );
   if (!launchpadData) {
     console.log('Launchpad not found', launchpadAddress);

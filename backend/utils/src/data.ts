@@ -5,9 +5,9 @@ const MOCK_USDC = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
 
 const launchpadsData: LaunchpadData[] = [
   {
-    id: '0xd8058efe0198ae9dD7D563e1b4938Dcbc86A1F81',
-    name: 'Test Launchpad 1',
     slug: 'test-launchpad-1',
+    address: '0xd8058efe0198ae9dD7D563e1b4938Dcbc86A1F81',
+    name: 'Test Launchpad 1',
     description: 'Description of Test Launchpad 1',
     image: '/images/game-icon-towerdefense.webp',
     referralDiscountBps: 100,
@@ -76,9 +76,9 @@ const launchpadsData: LaunchpadData[] = [
     ],
   },
   {
-    id: '0x6D544390Eb535d61e196c87d6B9c80dCD8628Acd',
-    name: 'Test Launchpad 2',
     slug: 'test-launchpad-2',
+    address: '0x6D544390Eb535d61e196c87d6B9c80dCD8628Acd',
+    name: 'Test Launchpad 2',
     description: 'Description of Test Launchpad 2',
     image: '/images/game-icon-junglewars.webp',
     items: [
