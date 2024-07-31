@@ -211,7 +211,7 @@ function createUserItems(
   }
 
   const contributedTotal = participatedAmountTotal + BigInt(inputData.payload.amount);
-  if (contributedTotal !== totalCost) {
+  if (contributedTotal < totalCost) {
     return null;
   }
   if (totalFreeItemsValue > contributedTotal) {
