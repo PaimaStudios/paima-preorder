@@ -67,7 +67,7 @@ const models: TsoaRoute.Models = {
     "GetUserDataResponse": {
         "dataType": "refObject",
         "properties": {
-            "stats": {"ref":"UserDataStats","required":true},
+            "stats": {"dataType":"union","subSchemas":[{"ref":"UserDataStats"},{"dataType":"enum","enums":[null]}],"required":true},
         },
         "additionalProperties": false,
     },
@@ -83,11 +83,13 @@ const models: TsoaRoute.Models = {
     "IGetParticipationsResult": {
         "dataType": "refObject",
         "properties": {
+            "blockheight": {"dataType":"double","required":true},
             "itemids": {"dataType":"string","required":true},
             "itemquantities": {"dataType":"string","required":true},
             "launchpad": {"dataType":"string","required":true},
             "paymentamount": {"dataType":"string","required":true},
             "paymenttoken": {"dataType":"string","required":true},
+            "preconditionsmet": {"dataType":"boolean","required":true},
             "referrer": {"dataType":"string","required":true},
             "txhash": {"dataType":"string","required":true},
             "wallet": {"dataType":"string","required":true},
@@ -108,14 +110,34 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CommonItemProps": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"image":{"dataType":"string"},"description":{"dataType":"string","required":true},"name":{"dataType":"string","required":true},"id":{"dataType":"string","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Record_string.string_": {
         "dataType": "refAlias",
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{},"additionalProperties":{"dataType":"string"},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "StandardItem": {
+        "dataType": "refAlias",
+        "type": {"dataType":"intersection","subSchemas":[{"ref":"CommonItemProps"},{"dataType":"nestedObjectLiteral","nestedProperties":{"referralDiscountBps":{"dataType":"double"},"prices":{"ref":"Record_string.string_","required":true}}}],"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "FreeRewardItem": {
+        "dataType": "refAlias",
+        "type": {"dataType":"intersection","subSchemas":[{"ref":"CommonItemProps"},{"dataType":"nestedObjectLiteral","nestedProperties":{"freeAt":{"ref":"Record_string.string_","required":true}}}],"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ItemType": {
+        "dataType": "refAlias",
+        "type": {"dataType":"union","subSchemas":[{"ref":"StandardItem"},{"ref":"FreeRewardItem"}],"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "LaunchpadData": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"items":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"prices":{"ref":"Record_string.string_","required":true},"name":{"dataType":"string","required":true},"id":{"dataType":"string","required":true}}},"required":true},"name":{"dataType":"string","required":true},"id":{"dataType":"string","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"curatedPackages":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"items":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"quantity":{"dataType":"double","required":true},"id":{"dataType":"string","required":true}}},"required":true},"description":{"dataType":"string"},"name":{"dataType":"string","required":true}}}},"referralDiscountBps":{"dataType":"double"},"whitelistedAddresses":{"dataType":"array","array":{"dataType":"string"}},"timestampEndSale":{"dataType":"double","required":true},"timestampStartPublicSale":{"dataType":"double","required":true},"timestampStartWhitelistSale":{"dataType":"double"},"items":{"dataType":"array","array":{"dataType":"refAlias","ref":"ItemType"},"required":true},"image":{"dataType":"string"},"description":{"dataType":"string","required":true},"name":{"dataType":"string","required":true},"address":{"dataType":"string","required":true},"slug":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "GetLaunchpadsResponse": {

@@ -101,7 +101,12 @@
 			"GetUserDataResponse": {
 				"properties": {
 					"stats": {
-						"$ref": "#/components/schemas/UserDataStats"
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/UserDataStats"
+							}
+						],
+						"nullable": true
 					}
 				},
 				"required": [
@@ -125,6 +130,10 @@
 			"IGetParticipationsResult": {
 				"description": "'GetParticipations' return type",
 				"properties": {
+					"blockheight": {
+						"type": "number",
+						"format": "double"
+					},
 					"itemids": {
 						"type": "string"
 					},
@@ -140,6 +149,9 @@
 					"paymenttoken": {
 						"type": "string"
 					},
+					"preconditionsmet": {
+						"type": "boolean"
+					},
 					"referrer": {
 						"type": "string"
 					},
@@ -151,11 +163,13 @@
 					}
 				},
 				"required": [
+					"blockheight",
 					"itemids",
 					"itemquantities",
 					"launchpad",
 					"paymentamount",
 					"paymenttoken",
+					"preconditionsmet",
 					"referrer",
 					"txhash",
 					"wallet"
@@ -181,6 +195,32 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"CommonItemProps": {
+				"properties": {
+					"image": {
+						"type": "string",
+						"description": "Optional URL to the image displayed in the frontend"
+					},
+					"description": {
+						"type": "string",
+						"description": "Item description displayed in the frontend"
+					},
+					"name": {
+						"type": "string",
+						"description": "Item name to be displayed on the frontend"
+					},
+					"id": {
+						"type": "string",
+						"description": "Item ID (numerical string) that will be also emitted in the events"
+					}
+				},
+				"required": [
+					"description",
+					"name",
+					"id"
+				],
+				"type": "object"
+			},
 			"Record_string.string_": {
 				"properties": {},
 				"additionalProperties": {
@@ -189,41 +229,167 @@
 				"type": "object",
 				"description": "Construct a type with a set of properties K of type T"
 			},
+			"StandardItem": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/CommonItemProps"
+					},
+					{
+						"properties": {
+							"referralDiscountBps": {
+								"type": "number",
+								"format": "double",
+								"description": "Optional override of the referral discount to the price of the item, expressed in basis points"
+							},
+							"prices": {
+								"$ref": "#/components/schemas/Record_string.string_",
+								"description": "Map of payment token identifier (address) to price of the item"
+							}
+						},
+						"required": [
+							"prices"
+						],
+						"type": "object"
+					}
+				]
+			},
+			"FreeRewardItem": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/CommonItemProps"
+					},
+					{
+						"properties": {
+							"freeAt": {
+								"$ref": "#/components/schemas/Record_string.string_",
+								"description": "Map of payment token identifier (address) to amount per which the item is able to be claimed for free"
+							}
+						},
+						"required": [
+							"freeAt"
+						],
+						"type": "object"
+					}
+				]
+			},
+			"ItemType": {
+				"anyOf": [
+					{
+						"$ref": "#/components/schemas/StandardItem"
+					},
+					{
+						"$ref": "#/components/schemas/FreeRewardItem"
+					}
+				]
+			},
 			"LaunchpadData": {
 				"properties": {
-					"items": {
+					"curatedPackages": {
 						"items": {
 							"properties": {
-								"prices": {
-									"$ref": "#/components/schemas/Record_string.string_"
+								"items": {
+									"items": {
+										"properties": {
+											"quantity": {
+												"type": "number",
+												"format": "double",
+												"description": "Quantity of the item in the package"
+											},
+											"id": {
+												"type": "string",
+												"description": "Item ID (numerical string) corresponding to the `items` array"
+											}
+										},
+										"required": [
+											"quantity",
+											"id"
+										],
+										"type": "object"
+									},
+									"type": "array",
+									"description": "List of items that are part of the package"
+								},
+								"description": {
+									"type": "string",
+									"description": "Optional package description displayed in the frontend, if omitted the enumeration of package items will be displayed"
 								},
 								"name": {
-									"type": "string"
-								},
-								"id": {
-									"type": "string"
+									"type": "string",
+									"description": "Package name to be displayed on the frontend"
 								}
 							},
 							"required": [
-								"prices",
-								"name",
-								"id"
+								"items",
+								"name"
 							],
 							"type": "object"
 						},
-						"type": "array"
+						"type": "array",
+						"description": "List of curated packages of items (basically just a shortcut to add multiple items to the cart)"
+					},
+					"referralDiscountBps": {
+						"type": "number",
+						"format": "double",
+						"description": "Default referral discount to the prices of items, expressed in basis points"
+					},
+					"whitelistedAddresses": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array",
+						"description": "List of addresses that are whitelisted for the whitelist sale. Omit if there is no whitelist sale"
+					},
+					"timestampEndSale": {
+						"type": "number",
+						"format": "double",
+						"description": "UNIX timestamp of the end of the sale, in seconds"
+					},
+					"timestampStartPublicSale": {
+						"type": "number",
+						"format": "double",
+						"description": "UNIX timestamp of the start of the public sale, in seconds"
+					},
+					"timestampStartWhitelistSale": {
+						"type": "number",
+						"format": "double",
+						"description": "Optional UNIX timestamp of the start of the whitelist sale, in seconds. Omit if there is no whitelist sale"
+					},
+					"items": {
+						"items": {
+							"$ref": "#/components/schemas/ItemType"
+						},
+						"type": "array",
+						"description": "List of items available for purchase in the launchpad"
+					},
+					"image": {
+						"type": "string",
+						"description": "URL to the image displayed in the launchpads list"
+					},
+					"description": {
+						"type": "string",
+						"description": "Game description displayed in the launchpads list"
 					},
 					"name": {
-						"type": "string"
+						"type": "string",
+						"description": "Launchpad name to be displayed on the frontend"
 					},
-					"id": {
-						"type": "string"
+					"address": {
+						"type": "string",
+						"description": "Launchpad contract address"
+					},
+					"slug": {
+						"type": "string",
+						"description": "URL-friendly slug of the name"
 					}
 				},
 				"required": [
+					"timestampEndSale",
+					"timestampStartPublicSale",
 					"items",
+					"description",
 					"name",
-					"id"
+					"address",
+					"slug"
 				],
 				"type": "object"
 			},
