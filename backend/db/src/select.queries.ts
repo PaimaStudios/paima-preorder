@@ -111,9 +111,7 @@ export interface IGetUserItemsParams {
 /** 'GetUserItems' return type */
 export interface IGetUserItemsResult {
   itemid: number;
-  launchpad: string;
   quantity: number;
-  wallet: string;
 }
 
 /** 'GetUserItems' query type */
@@ -122,12 +120,12 @@ export interface IGetUserItemsQuery {
   result: IGetUserItemsResult;
 }
 
-const getUserItemsIR: any = {"usedParamSet":{"launchpad":true,"wallet":true},"params":[{"name":"launchpad","required":true,"transform":{"type":"scalar"},"locs":[{"a":53,"b":63}]},{"name":"wallet","required":true,"transform":{"type":"scalar"},"locs":[{"a":78,"b":85}]}],"statement":"SELECT * FROM launchpad_user_items\nWHERE launchpad = :launchpad! AND wallet = :wallet!"};
+const getUserItemsIR: any = {"usedParamSet":{"launchpad":true,"wallet":true},"params":[{"name":"launchpad","required":true,"transform":{"type":"scalar"},"locs":[{"a":68,"b":78}]},{"name":"wallet","required":true,"transform":{"type":"scalar"},"locs":[{"a":93,"b":100}]}],"statement":"SELECT itemId, quantity FROM launchpad_user_items\nWHERE launchpad = :launchpad! AND wallet = :wallet!"};
 
 /**
  * Query generated from SQL:
  * ```
- * SELECT * FROM launchpad_user_items
+ * SELECT itemId, quantity FROM launchpad_user_items
  * WHERE launchpad = :launchpad! AND wallet = :wallet!
  * ```
  */
