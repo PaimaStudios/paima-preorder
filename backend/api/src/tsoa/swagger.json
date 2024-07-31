@@ -7,6 +7,34 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
+			"IGetUserResult": {
+				"description": "'GetUser' return type",
+				"properties": {
+					"launchpad": {
+						"type": "string"
+					},
+					"participationvalid": {
+						"type": "boolean"
+					},
+					"paymenttoken": {
+						"type": "string"
+					},
+					"wallet": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"launchpad",
+					"participationvalid",
+					"paymenttoken",
+					"wallet"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UserStats": {
+				"$ref": "#/components/schemas/IGetUserResult"
+			},
 			"IGetUserItemsResult": {
 				"description": "'GetUserItems' return type",
 				"properties": {
@@ -37,49 +65,6 @@
 			"UserItemsStats": {
 				"$ref": "#/components/schemas/IGetUserItemsResult"
 			},
-			"GetUserItemsResponse": {
-				"properties": {
-					"stats": {
-						"items": {
-							"$ref": "#/components/schemas/UserItemsStats"
-						},
-						"type": "array"
-					}
-				},
-				"required": [
-					"stats"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"IGetUserResult": {
-				"description": "'GetUser' return type",
-				"properties": {
-					"launchpad": {
-						"type": "string"
-					},
-					"participationvalid": {
-						"type": "boolean"
-					},
-					"paymenttoken": {
-						"type": "string"
-					},
-					"wallet": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"launchpad",
-					"participationvalid",
-					"paymenttoken",
-					"wallet"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"UserStats": {
-				"$ref": "#/components/schemas/IGetUserResult"
-			},
 			"UserDataStats": {
 				"properties": {
 					"items": {
@@ -107,18 +92,6 @@
 							}
 						],
 						"nullable": true
-					}
-				},
-				"required": [
-					"stats"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"GetUserResponse": {
-				"properties": {
-					"stats": {
-						"$ref": "#/components/schemas/UserStats"
 					}
 				},
 				"required": [
@@ -421,42 +394,6 @@
 		"contact": {}
 	},
 	"paths": {
-		"/userItems": {
-			"get": {
-				"operationId": "Get",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/GetUserItemsResponse"
-								}
-							}
-						}
-					}
-				},
-				"security": [],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "launchpad",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"in": "query",
-						"name": "wallet",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
-			}
-		},
 		"/userData": {
 			"get": {
 				"operationId": "Get",
@@ -467,42 +404,6 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/GetUserDataResponse"
-								}
-							}
-						}
-					}
-				},
-				"security": [],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "launchpad",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"in": "query",
-						"name": "wallet",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
-			}
-		},
-		"/user": {
-			"get": {
-				"operationId": "Get",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/GetUserResponse"
 								}
 							}
 						}

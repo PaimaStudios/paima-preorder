@@ -3,11 +3,7 @@
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { TsoaRoute, fetchMiddlewares, ExpressTemplateService } from '@tsoa/runtime';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { UserItemsController } from './../controllers/userItems';
-// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { UserDataController } from './../controllers/userData';
-// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { UserController } from './../controllers/user';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ParticipationsController } from './../controllers/participations';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -19,30 +15,6 @@ import type { Request as ExRequest, Response as ExResponse, RequestHandler, Rout
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 const models: TsoaRoute.Models = {
-    "IGetUserItemsResult": {
-        "dataType": "refObject",
-        "properties": {
-            "itemid": {"dataType":"double","required":true},
-            "launchpad": {"dataType":"string","required":true},
-            "quantity": {"dataType":"double","required":true},
-            "wallet": {"dataType":"string","required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "UserItemsStats": {
-        "dataType": "refAlias",
-        "type": {"ref":"IGetUserItemsResult","validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "GetUserItemsResponse": {
-        "dataType": "refObject",
-        "properties": {
-            "stats": {"dataType":"array","array":{"dataType":"refAlias","ref":"UserItemsStats"},"required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "IGetUserResult": {
         "dataType": "refObject",
         "properties": {
@@ -59,6 +31,22 @@ const models: TsoaRoute.Models = {
         "type": {"ref":"IGetUserResult","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IGetUserItemsResult": {
+        "dataType": "refObject",
+        "properties": {
+            "itemid": {"dataType":"double","required":true},
+            "launchpad": {"dataType":"string","required":true},
+            "quantity": {"dataType":"double","required":true},
+            "wallet": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UserItemsStats": {
+        "dataType": "refAlias",
+        "type": {"ref":"IGetUserItemsResult","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "UserDataStats": {
         "dataType": "refAlias",
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"items":{"dataType":"array","array":{"dataType":"refAlias","ref":"UserItemsStats"},"required":true},"user":{"ref":"UserStats","required":true}},"validators":{}},
@@ -68,14 +56,6 @@ const models: TsoaRoute.Models = {
         "dataType": "refObject",
         "properties": {
             "stats": {"dataType":"union","subSchemas":[{"ref":"UserDataStats"},{"dataType":"enum","enums":[null]}],"required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "GetUserResponse": {
-        "dataType": "refObject",
-        "properties": {
-            "stats": {"ref":"UserStats","required":true},
         },
         "additionalProperties": false,
     },
@@ -165,37 +145,6 @@ export function RegisterRoutes(app: Router) {
 
 
     
-        app.get('/userItems',
-            ...(fetchMiddlewares<RequestHandler>(UserItemsController)),
-            ...(fetchMiddlewares<RequestHandler>(UserItemsController.prototype.get)),
-
-            async function UserItemsController_get(request: ExRequest, response: ExResponse, next: any) {
-            const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    launchpad: {"in":"query","name":"launchpad","required":true,"dataType":"string"},
-                    wallet: {"in":"query","name":"wallet","required":true,"dataType":"string"},
-            };
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = templateService.getValidatedArgs({ args, request, response });
-
-                const controller = new UserItemsController();
-
-              await templateService.apiHandler({
-                methodName: 'get',
-                controller,
-                response,
-                next,
-                validatedArgs,
-                successStatus: undefined,
-              });
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/userData',
             ...(fetchMiddlewares<RequestHandler>(UserDataController)),
             ...(fetchMiddlewares<RequestHandler>(UserDataController.prototype.get)),
@@ -213,37 +162,6 @@ export function RegisterRoutes(app: Router) {
                 validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
                 const controller = new UserDataController();
-
-              await templateService.apiHandler({
-                methodName: 'get',
-                controller,
-                response,
-                next,
-                validatedArgs,
-                successStatus: undefined,
-              });
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/user',
-            ...(fetchMiddlewares<RequestHandler>(UserController)),
-            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.get)),
-
-            async function UserController_get(request: ExRequest, response: ExResponse, next: any) {
-            const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    launchpad: {"in":"query","name":"launchpad","required":true,"dataType":"string"},
-                    wallet: {"in":"query","name":"wallet","required":true,"dataType":"string"},
-            };
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = templateService.getValidatedArgs({ args, request, response });
-
-                const controller = new UserController();
 
               await templateService.apiHandler({
                 methodName: 'get',
