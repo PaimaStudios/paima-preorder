@@ -35,15 +35,18 @@ export async function buyItems(params: {
     return [];
   }
 
-  const [user] = await getUser.run(
-    { launchpad: launchpadAddress, wallet: inputData.payload.receiver.toLowerCase() },
-    dbConn
-  );
-  if (user && user.paymenttoken !== inputData.payload.paymentToken) {
-    console.log(
-      `Payment token in event does not match payment token already used by user. Event payment token: ${inputData.payload.paymentToken}, user payment token: ${user.paymenttoken}`
-    );
-    return [persistParticipation(inputData, launchpadAddress, txHash, blockHeight)];
+  // todo: DEFINE CORRECT TIMESTAMP WHEN PAIMA ENGINE IS UPDATED TO SUPPORT IT
+  const preconditionsMet = await checkPreconditions({
+    inputData,
+    launchpadData,
+    launchpadAddress,
+    dbConn,
+    timestamp: blockHeight,
+  });
+  if (!preconditionsMet) {
+    return [
+      persistParticipation({ inputData, launchpadAddress, txHash, blockHeight, preconditionsMet }),
+    ];
   }
 
   const [participatedAmountTotal] = await getParticipatedAmountTotal.run(
@@ -54,7 +57,6 @@ export async function buyItems(params: {
     },
     dbConn
   );
-  console.log('participatedAmountTotal', participatedAmountTotal);
   const createUserItemsSqlUpdate = createUserItems(
     inputData,
     launchpadAddress,
@@ -65,7 +67,7 @@ export async function buyItems(params: {
 
   let sqlUpdates = [
     persistUser(inputData, launchpadAddress, participationValid),
-    persistParticipation(inputData, launchpadAddress, txHash, blockHeight),
+    persistParticipation({ inputData, launchpadAddress, txHash, blockHeight, preconditionsMet }),
     removeUserItems(inputData.payload.receiver.toLowerCase(), launchpadAddress),
   ];
 
@@ -73,6 +75,49 @@ export async function buyItems(params: {
     sqlUpdates = sqlUpdates.concat(createUserItemsSqlUpdate);
   }
   return sqlUpdates;
+}
+
+async function checkPreconditions(params: {
+  inputData: BuyItemsInput;
+  launchpadData: LaunchpadData;
+  launchpadAddress: string;
+  dbConn: Pool;
+  timestamp: number;
+}): Promise<boolean> {
+  const { inputData, launchpadData, launchpadAddress, dbConn, timestamp } = params;
+
+  const [user] = await getUser.run(
+    { launchpad: launchpadAddress, wallet: inputData.payload.receiver.toLowerCase() },
+    dbConn
+  );
+  if (user && user.paymenttoken !== inputData.payload.paymentToken) {
+    console.log(
+      `Payment token in event does not match payment token already used by user. Event payment token: ${inputData.payload.paymentToken}, user payment token: ${user.paymenttoken}`
+    );
+    return false;
+  }
+
+  const startSale =
+    launchpadData.timestampStartWhitelistSale || launchpadData.timestampStartPublicSale;
+  if (timestamp < startSale) {
+    console.log(`Block height ${timestamp} is before whitelist sale start ${startSale}`);
+    return false;
+  } else if (timestamp > launchpadData.timestampEndSale) {
+    console.log(`Block height ${timestamp} is after sale end ${launchpadData.timestampEndSale}`);
+    return false;
+  } else if (
+    launchpadData.timestampStartWhitelistSale &&
+    launchpadData.whitelistedAddresses &&
+    timestamp < launchpadData.timestampStartPublicSale &&
+    !launchpadData.whitelistedAddresses.includes(inputData.payload.buyer)
+  ) {
+    console.log(
+      `Block height ${timestamp} is in whitelist sale phase ${launchpadData.timestampStartWhitelistSale}-${launchpadData.timestampStartPublicSale} and ${inputData.payload.buyer} is not whitelisted`
+    );
+    return false;
+  }
+
+  return true;
 }
 
 function persistUser(
@@ -92,13 +137,15 @@ function persistUser(
   return [upsertUser, params];
 }
 
-function persistParticipation(
-  inputData: BuyItemsInput,
-  launchpadAddress: string,
-  txHash: string,
-  blockHeight: number
-): SQLUpdate {
-  const params: IInsertParticipationParams = {
+function persistParticipation(params: {
+  inputData: BuyItemsInput;
+  launchpadAddress: string;
+  txHash: string;
+  blockHeight: number;
+  preconditionsMet: boolean;
+}): SQLUpdate {
+  const { inputData, launchpadAddress, txHash, blockHeight, preconditionsMet } = params;
+  const insertParams: IInsertParticipationParams = {
     stats: {
       launchpad: launchpadAddress,
       wallet: inputData.payload.receiver.toLowerCase(),
@@ -107,12 +154,13 @@ function persistParticipation(
       referrer: inputData.payload.referrer,
       itemIds: inputData.payload.itemsIds.join(','),
       itemQuantities: inputData.payload.itemsQuantities.join(','),
+      preconditionsMet,
       txHash,
       blockHeight,
     },
   };
 
-  return [insertParticipation, params];
+  return [insertParticipation, insertParams];
 }
 
 function removeUserItems(wallet: WalletAddress, launchpadAddress: string): SQLUpdate {

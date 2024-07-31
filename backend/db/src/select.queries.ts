@@ -47,6 +47,7 @@ export interface IGetParticipationsResult {
   launchpad: string;
   paymentamount: string;
   paymenttoken: string;
+  preconditionsmet: boolean;
   referrer: string;
   txhash: string;
   wallet: string;

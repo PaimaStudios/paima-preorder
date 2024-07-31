@@ -65,9 +65,9 @@ export type LaunchpadData = {
    */
   items: ItemType[];
   /**
-   * UNIX timestamp of the start of the whitelist sale, in seconds
+   * Optional UNIX timestamp of the start of the whitelist sale, in seconds. Omit if there is no whitelist sale
    */
-  timestampStartWhitelistSale: number;
+  timestampStartWhitelistSale?: number;
   /**
    * UNIX timestamp of the start of the public sale, in seconds
    */
@@ -76,6 +76,10 @@ export type LaunchpadData = {
    * UNIX timestamp of the end of the sale, in seconds
    */
   timestampEndSale: number;
+  /**
+   * List of addresses that are whitelisted for the whitelist sale. Omit if there is no whitelist sale
+   */
+  whitelistedAddresses?: string[];
   /**
    * Default referral discount to the prices of items, expressed in basis points
    */

@@ -44,6 +44,7 @@ const launchpadsData: LaunchpadData[] = [
     timestampStartWhitelistSale: 1724743540,
     timestampStartPublicSale: 1724829940,
     timestampEndSale: 1724916340,
+    whitelistedAddresses: ['0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'],
     curatedPackages: [
       {
         name: 'Package 1',
@@ -103,6 +104,7 @@ const launchpadsData: LaunchpadData[] = [
     timestampStartWhitelistSale: 1724743540,
     timestampStartPublicSale: 1724829940,
     timestampEndSale: 1724916340,
+    whitelistedAddresses: ['0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'],
   },
 ];
 

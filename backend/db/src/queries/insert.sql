@@ -10,7 +10,7 @@ participationValid = EXCLUDED.participationValid;
 
 /*
   @name insertParticipation
-  @param stats -> (launchpad!, wallet!, paymentToken!, paymentAmount!, referrer!, itemIds!, itemQuantities!, txHash!, blockHeight!)
+  @param stats -> (launchpad!, wallet!, paymentToken!, paymentAmount!, referrer!, itemIds!, itemQuantities!, txHash!, blockHeight!, preconditionsMet!)
 */
 INSERT INTO launchpad_participations
 VALUES :stats
