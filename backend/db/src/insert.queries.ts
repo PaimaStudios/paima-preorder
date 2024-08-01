@@ -7,6 +7,7 @@ export interface IUpsertUserParams {
     launchpad: string,
     wallet: string,
     paymentToken: string,
+    totalAmount: string,
     participationValid: boolean
   };
 }
@@ -20,7 +21,7 @@ export interface IUpsertUserQuery {
   result: IUpsertUserResult;
 }
 
-const upsertUserIR: any = {"usedParamSet":{"stats":true},"params":[{"name":"stats","required":false,"transform":{"type":"pick_tuple","keys":[{"name":"launchpad","required":true},{"name":"wallet","required":true},{"name":"paymentToken","required":true},{"name":"participationValid","required":true}]},"locs":[{"a":35,"b":40}]}],"statement":"INSERT INTO launchpad_users\nVALUES :stats\nON CONFLICT (launchpad, wallet)\nDO UPDATE SET\nparticipationValid = EXCLUDED.participationValid"};
+const upsertUserIR: any = {"usedParamSet":{"stats":true},"params":[{"name":"stats","required":false,"transform":{"type":"pick_tuple","keys":[{"name":"launchpad","required":true},{"name":"wallet","required":true},{"name":"paymentToken","required":true},{"name":"totalAmount","required":true},{"name":"participationValid","required":true}]},"locs":[{"a":35,"b":40}]}],"statement":"INSERT INTO launchpad_users\nVALUES :stats\nON CONFLICT (launchpad, wallet)\nDO UPDATE SET\nparticipationValid = EXCLUDED.participationValid, totalAmount = (launchpad_users.totalAmount::DECIMAL + EXCLUDED.totalAmount::DECIMAL)::TEXT"};
 
 /**
  * Query generated from SQL:
@@ -29,7 +30,7 @@ const upsertUserIR: any = {"usedParamSet":{"stats":true},"params":[{"name":"stat
  * VALUES :stats
  * ON CONFLICT (launchpad, wallet)
  * DO UPDATE SET
- * participationValid = EXCLUDED.participationValid
+ * participationValid = EXCLUDED.participationValid, totalAmount = (launchpad_users.totalAmount::DECIMAL + EXCLUDED.totalAmount::DECIMAL)::TEXT
  * ```
  */
 export const upsertUser = new PreparedQuery<IUpsertUserParams,IUpsertUserResult>(upsertUserIR);

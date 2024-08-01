@@ -129,6 +129,7 @@ function persistUser(
     stats: {
       launchpad: launchpadAddress,
       paymentToken: inputData.payload.paymentToken,
+      totalAmount: inputData.payload.amount,
       wallet: inputData.payload.receiver.toLowerCase(),
       participationValid,
     },

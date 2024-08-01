@@ -12,6 +12,7 @@ export interface IGetUserResult {
   launchpad: string;
   participationvalid: boolean;
   paymenttoken: string;
+  totalamount: string;
   wallet: string;
 }
 
