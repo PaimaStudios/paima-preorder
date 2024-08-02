@@ -130,6 +130,7 @@ function persistUser(
       launchpad: launchpadAddress,
       paymentToken: inputData.payload.paymentToken,
       totalAmount: inputData.payload.amount,
+      lastReferrer: inputData.payload.referrer,
       wallet: inputData.payload.receiver.toLowerCase(),
       participationValid,
     },

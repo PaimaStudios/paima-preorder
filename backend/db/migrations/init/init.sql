@@ -3,6 +3,7 @@ CREATE TABLE launchpad_users (
   wallet TEXT NOT NULL,
   paymentToken TEXT NOT NULL,
   totalAmount TEXT NOT NULL,
+  lastReferrer TEXT NOT NULL,
   participationValid BOOLEAN NOT NULL,
   PRIMARY KEY (launchpad, wallet)
 );

@@ -9,6 +9,7 @@ export interface IGetUserParams {
 
 /** 'GetUser' return type */
 export interface IGetUserResult {
+  lastreferrer: string;
   launchpad: string;
   participationvalid: boolean;
   paymenttoken: string;
