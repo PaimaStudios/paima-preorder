@@ -26,3 +26,10 @@ WHERE launchpad = :launchpad! AND wallet = :wallet! AND paymentToken = :paymentT
 SELECT itemId, quantity FROM launchpad_user_items
 WHERE launchpad = :launchpad! AND wallet = :wallet!
 ;
+
+/*
+  @name getItemsPurchasedQuantityExceptUser
+*/
+SELECT SUM(quantity) FROM launchpad_user_items
+WHERE launchpad = :launchpad! AND itemId = :itemId! AND wallet != :wallet!
+;

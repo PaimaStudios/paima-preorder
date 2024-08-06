@@ -74,6 +74,7 @@ const launchpadsData: LaunchpadData[] = [
           [ZERO_ADDRESS]: '4000000000000000',
           [MOCK_USDC]: '13600000000000000000',
         },
+        supply: 5,
       },
       {
         id: 8,
@@ -83,6 +84,7 @@ const launchpadsData: LaunchpadData[] = [
           [ZERO_ADDRESS]: '4000000000000000',
           [MOCK_USDC]: '13600000000000000000',
         },
+        supply: 5,
       },
       {
         id: 9,
@@ -125,7 +127,10 @@ const launchpadsData: LaunchpadData[] = [
     timestampStartWhitelistSale: 10,
     timestampStartPublicSale: 1724829940,
     timestampEndSale: 1724916340,
-    whitelistedAddresses: ['0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'],
+    whitelistedAddresses: [
+      '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',
+      '0x70997970C51812dc3A010C7d01b50e0d17dc79C8',
+    ],
     curatedPackages: [
       {
         name: 'Rare set',

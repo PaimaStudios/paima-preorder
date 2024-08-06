@@ -9,6 +9,7 @@ import type {
 } from '@game/db';
 import {
   deleteUserItems,
+  getItemsPurchasedQuantityExceptUser,
   getParticipatedAmountTotal,
   getUser,
   insertParticipation,
@@ -57,12 +58,13 @@ export async function buyItems(params: {
     },
     dbConn
   );
-  const createUserItemsSqlUpdate = createUserItems(
+  const createUserItemsSqlUpdate = await createUserItems({
     inputData,
     launchpadAddress,
     launchpadData,
-    BigInt(participatedAmountTotal.sum ?? '0')
-  );
+    participatedAmountTotal: BigInt(participatedAmountTotal.sum ?? '0'),
+    dbConn,
+  });
   const participationValid = createUserItemsSqlUpdate !== null;
 
   let sqlUpdates = [
@@ -171,27 +173,38 @@ function removeUserItems(wallet: WalletAddress, launchpadAddress: string): SQLUp
   return [deleteUserItems, params];
 }
 
-function createUserItems(
-  inputData: BuyItemsInput,
-  launchpadAddress: string,
-  launchpadData: LaunchpadData,
-  participatedAmountTotal: bigint
-): SQLUpdate[] | null {
+async function createUserItems(params: {
+  inputData: BuyItemsInput;
+  launchpadAddress: string;
+  launchpadData: LaunchpadData;
+  participatedAmountTotal: bigint;
+  dbConn: Pool;
+}): Promise<SQLUpdate[] | null> {
+  const { inputData, launchpadAddress, launchpadData, participatedAmountTotal, dbConn } = params;
   const { itemsIds, itemsQuantities } = inputData.payload;
+
+  // Check for input errors
   if (itemsIds.length !== itemsQuantities.length || itemsIds.length === 0) {
+    return null;
+  }
+
+  // Check if there are duplicate items
+  if (itemsIds.length !== Array.from(new Set(itemsIds)).length) {
     return null;
   }
 
   let error: string | null = null;
   let totalCost = 0n;
   let totalFreeItemsValue = 0n;
-  itemsIds.forEach((itemId, index) => {
+  for (const [index, itemId] of itemsIds.entries()) {
     const launchpadDataItem = launchpadData.items.find(item => item.id === Number(itemId));
     if (!launchpadDataItem) {
       error = `Item with id ${itemId} not found in launchpad data`;
-      return;
+      break;
     }
+
     if ('prices' in launchpadDataItem) {
+      // Calculate the total cost of the items
       let itemCost = BigInt(launchpadDataItem.prices[inputData.payload.paymentToken]);
       if (inputData.payload.referrer !== ZERO_ADDRESS) {
         const itemReferralDiscountBps =
@@ -201,12 +214,36 @@ function createUserItems(
       const itemQuantityCost = itemCost * BigInt(itemsQuantities[index]);
       totalCost += itemQuantityCost;
     } else if ('freeAt' in launchpadDataItem) {
+      // Or calculate the total value of free items
       const itemQuantityValue =
         BigInt(launchpadDataItem.freeAt[inputData.payload.paymentToken]) *
         BigInt(itemsQuantities[index]);
       totalFreeItemsValue += itemQuantityValue;
     }
-  });
+
+    // Check if the item has a supply
+    if (launchpadDataItem.supply !== undefined) {
+      const [purchasedQuantityExceptUser] = await getItemsPurchasedQuantityExceptUser.run(
+        {
+          itemId: Number(itemId),
+          launchpad: launchpadAddress,
+          wallet: inputData.payload.receiver.toLowerCase(),
+        },
+        dbConn
+      );
+
+      // Check if the purchase exceeds the supply
+      if (
+        Number(purchasedQuantityExceptUser.sum) + Number(itemsQuantities[index]) >
+        launchpadDataItem.supply
+      ) {
+        error = `Purchase of ${itemsQuantities[index]}x item ${itemId} exceeds the supply of ${launchpadDataItem.supply} (${
+          purchasedQuantityExceptUser.sum
+        } have already been purchased)`;
+        break;
+      }
+    }
+  }
   if (error) {
     console.log(error);
     return null;

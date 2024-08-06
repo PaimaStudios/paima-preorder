@@ -134,3 +134,33 @@ const getUserItemsIR: any = {"usedParamSet":{"launchpad":true,"wallet":true},"pa
 export const getUserItems = new PreparedQuery<IGetUserItemsParams,IGetUserItemsResult>(getUserItemsIR);
 
 
+/** 'GetItemsPurchasedQuantityExceptUser' parameters type */
+export interface IGetItemsPurchasedQuantityExceptUserParams {
+  itemId: number;
+  launchpad: string;
+  wallet: string;
+}
+
+/** 'GetItemsPurchasedQuantityExceptUser' return type */
+export interface IGetItemsPurchasedQuantityExceptUserResult {
+  sum: string | null;
+}
+
+/** 'GetItemsPurchasedQuantityExceptUser' query type */
+export interface IGetItemsPurchasedQuantityExceptUserQuery {
+  params: IGetItemsPurchasedQuantityExceptUserParams;
+  result: IGetItemsPurchasedQuantityExceptUserResult;
+}
+
+const getItemsPurchasedQuantityExceptUserIR: any = {"usedParamSet":{"launchpad":true,"itemId":true,"wallet":true},"params":[{"name":"launchpad","required":true,"transform":{"type":"scalar"},"locs":[{"a":65,"b":75}]},{"name":"itemId","required":true,"transform":{"type":"scalar"},"locs":[{"a":90,"b":97}]},{"name":"wallet","required":true,"transform":{"type":"scalar"},"locs":[{"a":113,"b":120}]}],"statement":"SELECT SUM(quantity) FROM launchpad_user_items\nWHERE launchpad = :launchpad! AND itemId = :itemId! AND wallet != :wallet!"};
+
+/**
+ * Query generated from SQL:
+ * ```
+ * SELECT SUM(quantity) FROM launchpad_user_items
+ * WHERE launchpad = :launchpad! AND itemId = :itemId! AND wallet != :wallet!
+ * ```
+ */
+export const getItemsPurchasedQuantityExceptUser = new PreparedQuery<IGetItemsPurchasedQuantityExceptUserParams,IGetItemsPurchasedQuantityExceptUserResult>(getItemsPurchasedQuantityExceptUserIR);
+
+

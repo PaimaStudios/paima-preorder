@@ -17,6 +17,10 @@ type CommonItemProps = {
    * Optional URL to the image displayed in the frontend
    */
   image?: string;
+  /**
+   * Optional supply of the item, if omitted the item is considered to be unlimited
+   */
+  supply?: number;
 };
 
 type StandardItem = CommonItemProps & {
