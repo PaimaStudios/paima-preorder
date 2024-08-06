@@ -10,6 +10,9 @@
 			"IGetUserResult": {
 				"description": "'GetUser' return type",
 				"properties": {
+					"lastreferrer": {
+						"type": "string"
+					},
 					"launchpad": {
 						"type": "string"
 					},
@@ -19,14 +22,19 @@
 					"paymenttoken": {
 						"type": "string"
 					},
+					"totalamount": {
+						"type": "string"
+					},
 					"wallet": {
 						"type": "string"
 					}
 				},
 				"required": [
+					"lastreferrer",
 					"launchpad",
 					"participationvalid",
 					"paymenttoken",
+					"totalamount",
 					"wallet"
 				],
 				"type": "object",
@@ -42,22 +50,14 @@
 						"type": "number",
 						"format": "double"
 					},
-					"launchpad": {
-						"type": "string"
-					},
 					"quantity": {
 						"type": "number",
 						"format": "double"
-					},
-					"wallet": {
-						"type": "string"
 					}
 				},
 				"required": [
 					"itemid",
-					"launchpad",
-					"quantity",
-					"wallet"
+					"quantity"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -170,6 +170,16 @@
 			},
 			"CommonItemProps": {
 				"properties": {
+					"purchased": {
+						"type": "number",
+						"format": "double",
+						"description": "Number of purchased items, filled by the backend"
+					},
+					"supply": {
+						"type": "number",
+						"format": "double",
+						"description": "Optional supply of the item, if omitted the item is considered to be unlimited"
+					},
 					"image": {
 						"type": "string",
 						"description": "Optional URL to the image displayed in the frontend"
@@ -183,8 +193,9 @@
 						"description": "Item name to be displayed on the frontend"
 					},
 					"id": {
-						"type": "string",
-						"description": "Item ID (numerical string) that will be also emitted in the events"
+						"type": "number",
+						"format": "double",
+						"description": "Item ID that will be also emitted in the events"
 					}
 				},
 				"required": [
@@ -269,8 +280,9 @@
 												"description": "Quantity of the item in the package"
 											},
 											"id": {
-												"type": "string",
-												"description": "Item ID (numerical string) corresponding to the `items` array"
+												"type": "number",
+												"format": "double",
+												"description": "Item ID corresponding to the `items` array"
 											}
 										},
 										"required": [
@@ -373,6 +385,23 @@
 							"$ref": "#/components/schemas/LaunchpadData"
 						},
 						"type": "array"
+					}
+				},
+				"required": [
+					"stats"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"GetLaunchpadResponse": {
+				"properties": {
+					"stats": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/LaunchpadData"
+							}
+						],
+						"nullable": true
 					}
 				},
 				"required": [
@@ -483,6 +512,34 @@
 				},
 				"security": [],
 				"parameters": []
+			}
+		},
+		"/launchpad": {
+			"get": {
+				"operationId": "Get",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/GetLaunchpadResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "launchpad",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		}
 	},

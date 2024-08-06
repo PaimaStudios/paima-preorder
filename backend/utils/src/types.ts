@@ -21,6 +21,10 @@ type CommonItemProps = {
    * Optional supply of the item, if omitted the item is considered to be unlimited
    */
   supply?: number;
+  /**
+   * Number of purchased items, filled by the backend
+   */
+  purchased?: number;
 };
 
 type StandardItem = CommonItemProps & {

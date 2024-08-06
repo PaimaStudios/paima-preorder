@@ -8,6 +8,8 @@ import { UserDataController } from './../controllers/userData';
 import { ParticipationsController } from './../controllers/participations';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { LaunchpadsController } from './../controllers/launchpads';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { LaunchpadController } from './../controllers/launchpad';
 import type { Request as ExRequest, Response as ExResponse, RequestHandler, Router } from 'express';
 
 
@@ -18,9 +20,11 @@ const models: TsoaRoute.Models = {
     "IGetUserResult": {
         "dataType": "refObject",
         "properties": {
+            "lastreferrer": {"dataType":"string","required":true},
             "launchpad": {"dataType":"string","required":true},
             "participationvalid": {"dataType":"boolean","required":true},
             "paymenttoken": {"dataType":"string","required":true},
+            "totalamount": {"dataType":"string","required":true},
             "wallet": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
@@ -35,9 +39,7 @@ const models: TsoaRoute.Models = {
         "dataType": "refObject",
         "properties": {
             "itemid": {"dataType":"double","required":true},
-            "launchpad": {"dataType":"string","required":true},
             "quantity": {"dataType":"double","required":true},
-            "wallet": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
     },
@@ -92,7 +94,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CommonItemProps": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"image":{"dataType":"string"},"description":{"dataType":"string","required":true},"name":{"dataType":"string","required":true},"id":{"dataType":"string","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"purchased":{"dataType":"double"},"supply":{"dataType":"double"},"image":{"dataType":"string"},"description":{"dataType":"string","required":true},"name":{"dataType":"string","required":true},"id":{"dataType":"double","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Record_string.string_": {
@@ -117,13 +119,21 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "LaunchpadData": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"curatedPackages":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"items":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"quantity":{"dataType":"double","required":true},"id":{"dataType":"string","required":true}}},"required":true},"description":{"dataType":"string"},"name":{"dataType":"string","required":true}}}},"referralDiscountBps":{"dataType":"double"},"whitelistedAddresses":{"dataType":"array","array":{"dataType":"string"}},"timestampEndSale":{"dataType":"double","required":true},"timestampStartPublicSale":{"dataType":"double","required":true},"timestampStartWhitelistSale":{"dataType":"double"},"items":{"dataType":"array","array":{"dataType":"refAlias","ref":"ItemType"},"required":true},"image":{"dataType":"string"},"description":{"dataType":"string","required":true},"name":{"dataType":"string","required":true},"address":{"dataType":"string","required":true},"slug":{"dataType":"string","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"curatedPackages":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"items":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"quantity":{"dataType":"double","required":true},"id":{"dataType":"double","required":true}}},"required":true},"description":{"dataType":"string"},"name":{"dataType":"string","required":true}}}},"referralDiscountBps":{"dataType":"double"},"whitelistedAddresses":{"dataType":"array","array":{"dataType":"string"}},"timestampEndSale":{"dataType":"double","required":true},"timestampStartPublicSale":{"dataType":"double","required":true},"timestampStartWhitelistSale":{"dataType":"double"},"items":{"dataType":"array","array":{"dataType":"refAlias","ref":"ItemType"},"required":true},"image":{"dataType":"string"},"description":{"dataType":"string","required":true},"name":{"dataType":"string","required":true},"address":{"dataType":"string","required":true},"slug":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "GetLaunchpadsResponse": {
         "dataType": "refObject",
         "properties": {
             "stats": {"dataType":"array","array":{"dataType":"refAlias","ref":"LaunchpadData"},"required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "GetLaunchpadResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "stats": {"dataType":"union","subSchemas":[{"ref":"LaunchpadData"},{"dataType":"enum","enums":[null]}],"required":true},
         },
         "additionalProperties": false,
     },
@@ -222,6 +232,36 @@ export function RegisterRoutes(app: Router) {
                 validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
                 const controller = new LaunchpadsController();
+
+              await templateService.apiHandler({
+                methodName: 'get',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/launchpad',
+            ...(fetchMiddlewares<RequestHandler>(LaunchpadController)),
+            ...(fetchMiddlewares<RequestHandler>(LaunchpadController.prototype.get)),
+
+            async function LaunchpadController_get(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    launchpad: {"in":"query","name":"launchpad","required":true,"dataType":"string"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new LaunchpadController();
 
               await templateService.apiHandler({
                 methodName: 'get',

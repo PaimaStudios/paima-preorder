@@ -33,3 +33,11 @@ WHERE launchpad = :launchpad! AND wallet = :wallet!
 SELECT SUM(quantity) FROM launchpad_user_items
 WHERE launchpad = :launchpad! AND itemId = :itemId! AND wallet != :wallet!
 ;
+
+/*
+  @name getAllItemsPurchasedQuantity
+*/
+SELECT itemId, SUM(quantity) FROM launchpad_user_items
+WHERE launchpad = :launchpad!
+GROUP BY itemId
+;

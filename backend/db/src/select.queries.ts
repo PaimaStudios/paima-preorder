@@ -164,3 +164,33 @@ const getItemsPurchasedQuantityExceptUserIR: any = {"usedParamSet":{"launchpad":
 export const getItemsPurchasedQuantityExceptUser = new PreparedQuery<IGetItemsPurchasedQuantityExceptUserParams,IGetItemsPurchasedQuantityExceptUserResult>(getItemsPurchasedQuantityExceptUserIR);
 
 
+/** 'GetAllItemsPurchasedQuantity' parameters type */
+export interface IGetAllItemsPurchasedQuantityParams {
+  launchpad: string;
+}
+
+/** 'GetAllItemsPurchasedQuantity' return type */
+export interface IGetAllItemsPurchasedQuantityResult {
+  itemid: number;
+  sum: string | null;
+}
+
+/** 'GetAllItemsPurchasedQuantity' query type */
+export interface IGetAllItemsPurchasedQuantityQuery {
+  params: IGetAllItemsPurchasedQuantityParams;
+  result: IGetAllItemsPurchasedQuantityResult;
+}
+
+const getAllItemsPurchasedQuantityIR: any = {"usedParamSet":{"launchpad":true},"params":[{"name":"launchpad","required":true,"transform":{"type":"scalar"},"locs":[{"a":73,"b":83}]}],"statement":"SELECT itemId, SUM(quantity) FROM launchpad_user_items\nWHERE launchpad = :launchpad!\nGROUP BY itemId"};
+
+/**
+ * Query generated from SQL:
+ * ```
+ * SELECT itemId, SUM(quantity) FROM launchpad_user_items
+ * WHERE launchpad = :launchpad!
+ * GROUP BY itemId
+ * ```
+ */
+export const getAllItemsPurchasedQuantity = new PreparedQuery<IGetAllItemsPurchasedQuantityParams,IGetAllItemsPurchasedQuantityResult>(getAllItemsPurchasedQuantityIR);
+
+
