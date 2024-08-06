@@ -20,11 +20,9 @@ export class LaunchpadController extends Controller {
       { launchpad: stats.address },
       pool
     );
-    for (const item of itemsQuantities) {
-      const lpadItem = stats.items.find(i => i.id === item.itemid);
-      if (lpadItem) {
-        lpadItem.purchased = Number(item.sum);
-      }
+    for (const lpadItem of stats.items) {
+      const item = itemsQuantities.find(i => i.itemid === lpadItem.id);
+      lpadItem.purchased = Number(item?.sum ?? 0);
     }
     return { stats };
   }
