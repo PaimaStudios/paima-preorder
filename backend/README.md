@@ -35,12 +35,6 @@ To compile the Game Node into `endpoints` and `gameCode` entrypoints used by Pai
 npm run pack
 ```
 
-To compile the JavaScript Bundle of the middleware for the game frontend, run the command:
-
-```
-npm run pack:middleware
-```
-
 ## Prerequisites
 
 Ensure that the `paima-engine-{linux|mac}` executable is located in the parent directory of this project. The directory structure should be as follows:

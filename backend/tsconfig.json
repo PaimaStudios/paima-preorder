@@ -8,14 +8,11 @@
     "integration-testing",
     "**/*.test.ts",
     "utils/build",
-    "middleware/build",
     "game-logic/build",
     "db/build",
     "state-transition/build",
     "api/build",
-    "middleware/packaged",
-    "jest.config.js",
-    "middleware/esbuildconfig.cjs"
+    "jest.config.js"
   ],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig.json to read more about this file */
