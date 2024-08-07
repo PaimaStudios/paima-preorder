@@ -123,6 +123,16 @@ const launchpadsData: LaunchpadData[] = [
           [MOCK_USDC]: '68000000000000000000',
         },
       },
+      {
+        id: 103,
+        name: 'Real life hat',
+        description: "A real life hat with the game's logo",
+        freeAt: {
+          [ZERO_ADDRESS]: '30000000000000000',
+          [MOCK_USDC]: '102000000000000000000',
+        },
+        supply: 20,
+      },
     ],
     timestampStartWhitelistSale: 10,
     timestampStartPublicSale: 1724829940,

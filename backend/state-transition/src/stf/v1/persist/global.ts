@@ -46,7 +46,14 @@ export async function buyItems(params: {
   });
   if (!preconditionsMet) {
     return [
-      persistParticipation({ inputData, launchpadAddress, txHash, blockHeight, preconditionsMet }),
+      persistParticipation({
+        inputData,
+        launchpadAddress,
+        txHash,
+        blockHeight,
+        preconditionsMet,
+        participationValid: false,
+      }),
     ];
   }
 
@@ -69,12 +76,20 @@ export async function buyItems(params: {
 
   let sqlUpdates = [
     persistUser(inputData, launchpadAddress, participationValid),
-    persistParticipation({ inputData, launchpadAddress, txHash, blockHeight, preconditionsMet }),
-    removeUserItems(inputData.payload.receiver.toLowerCase(), launchpadAddress),
+    persistParticipation({
+      inputData,
+      launchpadAddress,
+      txHash,
+      blockHeight,
+      preconditionsMet,
+      participationValid,
+    }),
   ];
 
   if (createUserItemsSqlUpdate) {
-    sqlUpdates = sqlUpdates.concat(createUserItemsSqlUpdate);
+    sqlUpdates = sqlUpdates
+      .concat([removeUserItems(inputData.payload.receiver.toLowerCase(), launchpadAddress)])
+      .concat(createUserItemsSqlUpdate);
   }
   return sqlUpdates;
 }
@@ -147,8 +162,10 @@ function persistParticipation(params: {
   txHash: string;
   blockHeight: number;
   preconditionsMet: boolean;
+  participationValid: boolean;
 }): SQLUpdate {
-  const { inputData, launchpadAddress, txHash, blockHeight, preconditionsMet } = params;
+  const { inputData, launchpadAddress, txHash, blockHeight, preconditionsMet, participationValid } =
+    params;
   const insertParams: IInsertParticipationParams = {
     stats: {
       launchpad: launchpadAddress,
@@ -159,6 +176,7 @@ function persistParticipation(params: {
       itemIds: inputData.payload.itemsIds.join(','),
       itemQuantities: inputData.payload.itemsQuantities.join(','),
       preconditionsMet,
+      participationValid,
       txHash,
       blockHeight,
     },

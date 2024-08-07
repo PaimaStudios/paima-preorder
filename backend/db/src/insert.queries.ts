@@ -49,7 +49,8 @@ export interface IInsertParticipationParams {
     itemQuantities: string,
     txHash: string,
     blockHeight: number,
-    preconditionsMet: boolean
+    preconditionsMet: boolean,
+    participationValid: boolean
   };
 }
 
@@ -62,7 +63,7 @@ export interface IInsertParticipationQuery {
   result: IInsertParticipationResult;
 }
 
-const insertParticipationIR: any = {"usedParamSet":{"stats":true},"params":[{"name":"stats","required":false,"transform":{"type":"pick_tuple","keys":[{"name":"launchpad","required":true},{"name":"wallet","required":true},{"name":"paymentToken","required":true},{"name":"paymentAmount","required":true},{"name":"referrer","required":true},{"name":"itemIds","required":true},{"name":"itemQuantities","required":true},{"name":"txHash","required":true},{"name":"blockHeight","required":true},{"name":"preconditionsMet","required":true}]},"locs":[{"a":44,"b":49}]}],"statement":"INSERT INTO launchpad_participations\nVALUES :stats\nON CONFLICT\nDO NOTHING"};
+const insertParticipationIR: any = {"usedParamSet":{"stats":true},"params":[{"name":"stats","required":false,"transform":{"type":"pick_tuple","keys":[{"name":"launchpad","required":true},{"name":"wallet","required":true},{"name":"paymentToken","required":true},{"name":"paymentAmount","required":true},{"name":"referrer","required":true},{"name":"itemIds","required":true},{"name":"itemQuantities","required":true},{"name":"txHash","required":true},{"name":"blockHeight","required":true},{"name":"preconditionsMet","required":true},{"name":"participationValid","required":true}]},"locs":[{"a":44,"b":49}]}],"statement":"INSERT INTO launchpad_participations\nVALUES :stats\nON CONFLICT\nDO NOTHING"};
 
 /**
  * Query generated from SQL:

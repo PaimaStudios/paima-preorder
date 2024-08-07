@@ -10,7 +10,7 @@ participationValid = EXCLUDED.participationValid, lastReferrer = EXCLUDED.lastRe
 
 /*
   @name insertParticipation
-  @param stats -> (launchpad!, wallet!, paymentToken!, paymentAmount!, referrer!, itemIds!, itemQuantities!, txHash!, blockHeight!, preconditionsMet!)
+  @param stats -> (launchpad!, wallet!, paymentToken!, paymentAmount!, referrer!, itemIds!, itemQuantities!, txHash!, blockHeight!, preconditionsMet!, participationValid!)
 */
 INSERT INTO launchpad_participations
 VALUES :stats

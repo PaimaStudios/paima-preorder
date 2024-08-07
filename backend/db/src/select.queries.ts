@@ -47,6 +47,7 @@ export interface IGetParticipationsResult {
   itemids: string;
   itemquantities: string;
   launchpad: string;
+  participationvalid: boolean;
   paymentamount: string;
   paymenttoken: string;
   preconditionsmet: boolean;

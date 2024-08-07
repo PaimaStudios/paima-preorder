@@ -19,6 +19,7 @@ CREATE TABLE launchpad_participations (
   txHash TEXT NOT NULL,
   blockHeight INTEGER NOT NULL,
   preconditionsMet BOOLEAN NOT NULL,
+  participationValid BOOLEAN NOT NULL,
   PRIMARY KEY (launchpad, txHash, wallet)
 );
 
