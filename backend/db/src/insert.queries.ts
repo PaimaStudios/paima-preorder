@@ -9,7 +9,7 @@ export interface IUpsertUserParams {
     paymentToken: string,
     totalAmount: string,
     lastReferrer: string,
-    participationValid: boolean
+    lastParticipationValid: boolean
   };
 }
 
@@ -22,7 +22,7 @@ export interface IUpsertUserQuery {
   result: IUpsertUserResult;
 }
 
-const upsertUserIR: any = {"usedParamSet":{"stats":true},"params":[{"name":"stats","required":false,"transform":{"type":"pick_tuple","keys":[{"name":"launchpad","required":true},{"name":"wallet","required":true},{"name":"paymentToken","required":true},{"name":"totalAmount","required":true},{"name":"lastReferrer","required":true},{"name":"participationValid","required":true}]},"locs":[{"a":35,"b":40}]}],"statement":"INSERT INTO launchpad_users\nVALUES :stats\nON CONFLICT (launchpad, wallet)\nDO UPDATE SET\nparticipationValid = EXCLUDED.participationValid, lastReferrer = EXCLUDED.lastReferrer, totalAmount = (launchpad_users.totalAmount::DECIMAL + EXCLUDED.totalAmount::DECIMAL)::TEXT"};
+const upsertUserIR: any = {"usedParamSet":{"stats":true},"params":[{"name":"stats","required":false,"transform":{"type":"pick_tuple","keys":[{"name":"launchpad","required":true},{"name":"wallet","required":true},{"name":"paymentToken","required":true},{"name":"totalAmount","required":true},{"name":"lastReferrer","required":true},{"name":"lastParticipationValid","required":true}]},"locs":[{"a":35,"b":40}]}],"statement":"INSERT INTO launchpad_users\nVALUES :stats\nON CONFLICT (launchpad, wallet)\nDO UPDATE SET\nlastParticipationValid = EXCLUDED.lastParticipationValid, lastReferrer = EXCLUDED.lastReferrer, totalAmount = (launchpad_users.totalAmount::DECIMAL + EXCLUDED.totalAmount::DECIMAL)::TEXT"};
 
 /**
  * Query generated from SQL:
@@ -31,7 +31,7 @@ const upsertUserIR: any = {"usedParamSet":{"stats":true},"params":[{"name":"stat
  * VALUES :stats
  * ON CONFLICT (launchpad, wallet)
  * DO UPDATE SET
- * participationValid = EXCLUDED.participationValid, lastReferrer = EXCLUDED.lastReferrer, totalAmount = (launchpad_users.totalAmount::DECIMAL + EXCLUDED.totalAmount::DECIMAL)::TEXT
+ * lastParticipationValid = EXCLUDED.lastParticipationValid, lastReferrer = EXCLUDED.lastReferrer, totalAmount = (launchpad_users.totalAmount::DECIMAL + EXCLUDED.totalAmount::DECIMAL)::TEXT
  * ```
  */
 export const upsertUser = new PreparedQuery<IUpsertUserParams,IUpsertUserResult>(upsertUserIR);

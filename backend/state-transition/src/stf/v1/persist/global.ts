@@ -140,7 +140,7 @@ async function checkPreconditions(params: {
 function persistUser(
   inputData: BuyItemsInput,
   launchpadAddress: string,
-  participationValid: boolean
+  lastParticipationValid: boolean
 ): SQLUpdate {
   const params: IUpsertUserParams = {
     stats: {
@@ -149,7 +149,7 @@ function persistUser(
       totalAmount: inputData.payload.amount,
       lastReferrer: inputData.payload.referrer,
       wallet: inputData.payload.receiver.toLowerCase(),
-      participationValid,
+      lastParticipationValid,
     },
   };
 

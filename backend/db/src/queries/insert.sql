@@ -1,12 +1,12 @@
 /*
   @name upsertUser
-  @param stats -> (launchpad!, wallet!, paymentToken!, totalAmount!, lastReferrer!, participationValid!)
+  @param stats -> (launchpad!, wallet!, paymentToken!, totalAmount!, lastReferrer!, lastParticipationValid!)
 */
 INSERT INTO launchpad_users
 VALUES :stats
 ON CONFLICT (launchpad, wallet)
 DO UPDATE SET
-participationValid = EXCLUDED.participationValid, lastReferrer = EXCLUDED.lastReferrer, totalAmount = (launchpad_users.totalAmount::DECIMAL + EXCLUDED.totalAmount::DECIMAL)::TEXT;
+lastParticipationValid = EXCLUDED.lastParticipationValid, lastReferrer = EXCLUDED.lastReferrer, totalAmount = (launchpad_users.totalAmount::DECIMAL + EXCLUDED.totalAmount::DECIMAL)::TEXT;
 
 /*
   @name insertParticipation

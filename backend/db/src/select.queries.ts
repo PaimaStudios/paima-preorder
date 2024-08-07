@@ -9,9 +9,9 @@ export interface IGetUserParams {
 
 /** 'GetUser' return type */
 export interface IGetUserResult {
+  lastparticipationvalid: boolean;
   lastreferrer: string;
   launchpad: string;
-  participationvalid: boolean;
   paymenttoken: string;
   totalamount: string;
   wallet: string;
