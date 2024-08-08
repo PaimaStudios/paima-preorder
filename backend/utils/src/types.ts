@@ -1,4 +1,4 @@
-import type { IGetParticipationsResult, IGetUserResult, IGetUserItemsResult } from '@game/db';
+import type { IGetParticipationsResult, IGetUserResult, IGetUserItemsResult, IGetRefundsResult } from '@game/db';
 
 type CommonItemProps = {
   /**
@@ -125,6 +125,8 @@ export type UserStats = IGetUserResult;
 export type ParticipationsStats = IGetParticipationsResult;
 
 export type UserItemsStats = IGetUserItemsResult;
+
+export type RefundsStats = IGetRefundsResult;
 
 export type UserDataStats = {
   user: UserStats;

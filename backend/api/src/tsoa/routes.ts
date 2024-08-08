@@ -5,6 +5,8 @@ import { TsoaRoute, fetchMiddlewares, ExpressTemplateService } from '@tsoa/runti
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { UserDataController } from './../controllers/userData';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { RefundsController } from './../controllers/refunds';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ParticipationsController } from './../controllers/participations';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { LaunchpadsController } from './../controllers/launchpads';
@@ -20,9 +22,9 @@ const models: TsoaRoute.Models = {
     "IGetUserResult": {
         "dataType": "refObject",
         "properties": {
+            "lastparticipationvalid": {"dataType":"boolean","required":true},
             "lastreferrer": {"dataType":"string","required":true},
             "launchpad": {"dataType":"string","required":true},
-            "participationvalid": {"dataType":"boolean","required":true},
             "paymenttoken": {"dataType":"string","required":true},
             "totalamount": {"dataType":"string","required":true},
             "wallet": {"dataType":"string","required":true},
@@ -62,6 +64,37 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IGetRefundsResult": {
+        "dataType": "refObject",
+        "properties": {
+            "blockheight": {"dataType":"double","required":true},
+            "itemids": {"dataType":"string","required":true},
+            "itemquantities": {"dataType":"string","required":true},
+            "launchpad": {"dataType":"string","required":true},
+            "participationvalid": {"dataType":"boolean","required":true},
+            "paymentamount": {"dataType":"string","required":true},
+            "paymenttoken": {"dataType":"string","required":true},
+            "preconditionsmet": {"dataType":"boolean","required":true},
+            "referrer": {"dataType":"string","required":true},
+            "txhash": {"dataType":"string","required":true},
+            "wallet": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "RefundsStats": {
+        "dataType": "refAlias",
+        "type": {"ref":"IGetRefundsResult","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "GetRefundsResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "stats": {"dataType":"array","array":{"dataType":"refAlias","ref":"RefundsStats"},"required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "IGetParticipationsResult": {
         "dataType": "refObject",
         "properties": {
@@ -69,6 +102,7 @@ const models: TsoaRoute.Models = {
             "itemids": {"dataType":"string","required":true},
             "itemquantities": {"dataType":"string","required":true},
             "launchpad": {"dataType":"string","required":true},
+            "participationvalid": {"dataType":"boolean","required":true},
             "paymentamount": {"dataType":"string","required":true},
             "paymenttoken": {"dataType":"string","required":true},
             "preconditionsmet": {"dataType":"boolean","required":true},
@@ -172,6 +206,37 @@ export function RegisterRoutes(app: Router) {
                 validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
                 const controller = new UserDataController();
+
+              await templateService.apiHandler({
+                methodName: 'get',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/refunds',
+            ...(fetchMiddlewares<RequestHandler>(RefundsController)),
+            ...(fetchMiddlewares<RequestHandler>(RefundsController.prototype.get)),
+
+            async function RefundsController_get(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    launchpad: {"in":"query","name":"launchpad","required":true,"dataType":"string"},
+                    wallet: {"in":"query","name":"wallet","dataType":"string"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new RefundsController();
 
               await templateService.apiHandler({
                 methodName: 'get',

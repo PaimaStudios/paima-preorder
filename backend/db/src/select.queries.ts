@@ -195,3 +195,87 @@ const getAllItemsPurchasedQuantityIR: any = {"usedParamSet":{"launchpad":true},"
 export const getAllItemsPurchasedQuantity = new PreparedQuery<IGetAllItemsPurchasedQuantityParams,IGetAllItemsPurchasedQuantityResult>(getAllItemsPurchasedQuantityIR);
 
 
+/** 'GetRefunds' parameters type */
+export interface IGetRefundsParams {
+  launchpad: string;
+  wallet?: string | null | void;
+}
+
+/** 'GetRefunds' return type */
+export interface IGetRefundsResult {
+  blockheight: number;
+  itemids: string;
+  itemquantities: string;
+  launchpad: string;
+  participationvalid: boolean;
+  paymentamount: string;
+  paymenttoken: string;
+  preconditionsmet: boolean;
+  referrer: string;
+  txhash: string;
+  wallet: string;
+}
+
+/** 'GetRefunds' query type */
+export interface IGetRefundsQuery {
+  params: IGetRefundsParams;
+  result: IGetRefundsResult;
+}
+
+const getRefundsIR: any = {"usedParamSet":{"launchpad":true,"wallet":true},"params":[{"name":"launchpad","required":true,"transform":{"type":"scalar"},"locs":[{"a":155,"b":165},{"a":667,"b":677}]},{"name":"wallet","required":false,"transform":{"type":"scalar"},"locs":[{"a":210,"b":216},{"a":244,"b":250},{"a":688,"b":694},{"a":725,"b":731}]}],"statement":"WITH LastValidParticipation AS (\n  SELECT\n    wallet,\n    MAX(blockHeight) AS last_valid_block\n  FROM\n    launchpad_participations\n  WHERE\n    launchpad = :launchpad!\n    AND participationValid = TRUE\n    AND (:wallet::TEXT IS NULL OR wallet = :wallet)\n  GROUP BY\n    wallet\n),\nInvalidParticipations AS (\n  SELECT\n    lp.wallet,\n    lp.launchpad,\n    lp.paymentToken,\n    lp.paymentAmount,\n    lp.referrer,\n    lp.itemIds,\n    lp.itemQuantities,\n    lp.txHash,\n    lp.blockHeight,\n    lp.preconditionsMet,\n    lp.participationValid\n  FROM\n    launchpad_participations lp\n  LEFT JOIN\n    LastValidParticipation lvp ON lp.wallet = lvp.wallet\n  WHERE\n    lp.launchpad = :launchpad!\n    AND (:wallet::TEXT IS NULL OR lp.wallet = :wallet)\n    AND (\n      (lp.blockHeight > lvp.last_valid_block\n      AND lp.preconditionsMet = TRUE\n      AND lp.participationValid = FALSE)\n      OR\n      (lp.preconditionsMet = FALSE)\n    )\n)\nSELECT\n  wallet,\n  launchpad, paymentToken, paymentAmount, referrer, itemIds, itemQuantities, txHash, blockHeight, preconditionsMet, participationValid\nFROM\n  InvalidParticipations\nORDER BY wallet, blockHeight"};
+
+/**
+ * Query generated from SQL:
+ * ```
+ * WITH LastValidParticipation AS (
+ *   SELECT
+ *     wallet,
+ *     MAX(blockHeight) AS last_valid_block
+ *   FROM
+ *     launchpad_participations
+ *   WHERE
+ *     launchpad = :launchpad!
+ *     AND participationValid = TRUE
+ *     AND (:wallet::TEXT IS NULL OR wallet = :wallet)
+ *   GROUP BY
+ *     wallet
+ * ),
+ * InvalidParticipations AS (
+ *   SELECT
+ *     lp.wallet,
+ *     lp.launchpad,
+ *     lp.paymentToken,
+ *     lp.paymentAmount,
+ *     lp.referrer,
+ *     lp.itemIds,
+ *     lp.itemQuantities,
+ *     lp.txHash,
+ *     lp.blockHeight,
+ *     lp.preconditionsMet,
+ *     lp.participationValid
+ *   FROM
+ *     launchpad_participations lp
+ *   LEFT JOIN
+ *     LastValidParticipation lvp ON lp.wallet = lvp.wallet
+ *   WHERE
+ *     lp.launchpad = :launchpad!
+ *     AND (:wallet::TEXT IS NULL OR lp.wallet = :wallet)
+ *     AND (
+ *       (lp.blockHeight > lvp.last_valid_block
+ *       AND lp.preconditionsMet = TRUE
+ *       AND lp.participationValid = FALSE)
+ *       OR
+ *       (lp.preconditionsMet = FALSE)
+ *     )
+ * )
+ * SELECT
+ *   wallet,
+ *   launchpad, paymentToken, paymentAmount, referrer, itemIds, itemQuantities, txHash, blockHeight, preconditionsMet, participationValid
+ * FROM
+ *   InvalidParticipations
+ * ORDER BY wallet, blockHeight
+ * ```
+ */
+export const getRefunds = new PreparedQuery<IGetRefundsParams,IGetRefundsResult>(getRefundsIR);
+
+

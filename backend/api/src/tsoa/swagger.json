@@ -10,14 +10,14 @@
 			"IGetUserResult": {
 				"description": "'GetUser' return type",
 				"properties": {
+					"lastparticipationvalid": {
+						"type": "boolean"
+					},
 					"lastreferrer": {
 						"type": "string"
 					},
 					"launchpad": {
 						"type": "string"
-					},
-					"participationvalid": {
-						"type": "boolean"
 					},
 					"paymenttoken": {
 						"type": "string"
@@ -30,9 +30,9 @@
 					}
 				},
 				"required": [
+					"lastparticipationvalid",
 					"lastreferrer",
 					"launchpad",
-					"participationvalid",
 					"paymenttoken",
 					"totalamount",
 					"wallet"
@@ -100,8 +100,8 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"IGetParticipationsResult": {
-				"description": "'GetParticipations' return type",
+			"IGetRefundsResult": {
+				"description": "'GetRefunds' return type",
 				"properties": {
 					"blockheight": {
 						"type": "number",
@@ -115,6 +115,9 @@
 					},
 					"launchpad": {
 						"type": "string"
+					},
+					"participationvalid": {
+						"type": "boolean"
 					},
 					"paymentamount": {
 						"type": "string"
@@ -140,6 +143,79 @@
 					"itemids",
 					"itemquantities",
 					"launchpad",
+					"participationvalid",
+					"paymentamount",
+					"paymenttoken",
+					"preconditionsmet",
+					"referrer",
+					"txhash",
+					"wallet"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"RefundsStats": {
+				"$ref": "#/components/schemas/IGetRefundsResult"
+			},
+			"GetRefundsResponse": {
+				"properties": {
+					"stats": {
+						"items": {
+							"$ref": "#/components/schemas/RefundsStats"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"stats"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IGetParticipationsResult": {
+				"description": "'GetParticipations' return type",
+				"properties": {
+					"blockheight": {
+						"type": "number",
+						"format": "double"
+					},
+					"itemids": {
+						"type": "string"
+					},
+					"itemquantities": {
+						"type": "string"
+					},
+					"launchpad": {
+						"type": "string"
+					},
+					"participationvalid": {
+						"type": "boolean"
+					},
+					"paymentamount": {
+						"type": "string"
+					},
+					"paymenttoken": {
+						"type": "string"
+					},
+					"preconditionsmet": {
+						"type": "boolean"
+					},
+					"referrer": {
+						"type": "string"
+					},
+					"txhash": {
+						"type": "string"
+					},
+					"wallet": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"blockheight",
+					"itemids",
+					"itemquantities",
+					"launchpad",
+					"participationvalid",
 					"paymentamount",
 					"paymenttoken",
 					"preconditionsmet",
@@ -452,6 +528,42 @@
 						"in": "query",
 						"name": "wallet",
 						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/refunds": {
+			"get": {
+				"operationId": "Get",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/GetRefundsResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "launchpad",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "wallet",
+						"required": false,
 						"schema": {
 							"type": "string"
 						}
