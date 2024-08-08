@@ -1,4 +1,9 @@
-import type { IGetParticipationsResult, IGetUserResult, IGetUserItemsResult, IGetRefundsResult } from '@game/db';
+import type {
+  IGetParticipationsResult,
+  IGetUserResult,
+  IGetUserItemsResult,
+  IGetRefundsResult,
+} from '@game/db';
 
 type CommonItemProps = {
   /**
@@ -92,6 +97,10 @@ export type LaunchpadData = {
    * Default referral discount to the prices of items, expressed in basis points
    */
   referralDiscountBps?: number;
+  /**
+   * Referrer reward (stored in the smart contract), expressed in basis points
+   */
+  referrerRewardBps: number;
   /**
    * List of curated packages of items (basically just a shortcut to add multiple items to the cart)
    */

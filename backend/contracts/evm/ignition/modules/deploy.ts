@@ -5,7 +5,7 @@ export default buildModule('PaimaLaunchpad', m => {
 
   const mockUsdc = m.contract('MockERC20', ['MockUSDC', 'MUSDC', 1000000]);
   m.call(mockUsdc, 'transfer', [owner, 1_000_000_000_000_000_000_000_000n]);
-  const referrerRewardsBps = 500n;
+  const referrerRewardBps = 500n;
 
   const launchpadImpl = m.contract('PaimaLaunchpad', [], { id: 'PaimaLaunchpad_implementation' });
 
@@ -13,7 +13,7 @@ export default buildModule('PaimaLaunchpad', m => {
     id: 'PaimaLaunchpad_factory',
   });
 
-  const launchpadDeploy1 = m.call(factory, 'deploy', [owner, referrerRewardsBps, [mockUsdc]], {
+  const launchpadDeploy1 = m.call(factory, 'deploy', [owner, referrerRewardBps, [mockUsdc]], {
     id: 'Deploy1',
   });
   const launchpad1Address = m.readEventArgument(
@@ -26,7 +26,7 @@ export default buildModule('PaimaLaunchpad', m => {
   );
   const launchpad1 = m.contractAt('PaimaLaunchpad', launchpad1Address, { id: 'PaimaLaunchpad_1' });
 
-  const launchpadDeploy2 = m.call(factory, 'deploy', [owner, referrerRewardsBps, [mockUsdc]], {
+  const launchpadDeploy2 = m.call(factory, 'deploy', [owner, referrerRewardBps, [mockUsdc]], {
     id: 'Deploy2',
   });
   const launchpad2Address = m.readEventArgument(

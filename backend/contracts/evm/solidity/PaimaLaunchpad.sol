@@ -43,7 +43,7 @@ contract PaimaLaunchpad is OwnableUpgradeable, UUPSUpgradeable {
         _disableInitializers();
     }
 
-    function initialize(address _owner, uint256 _referrerRewardsBps, address[] memory _acceptedPaymentTokens)
+    function initialize(address _owner, uint256 _referrerRewardBps, address[] memory _acceptedPaymentTokens)
         public
         initializer
     {
@@ -51,7 +51,7 @@ contract PaimaLaunchpad is OwnableUpgradeable, UUPSUpgradeable {
         __UUPSUpgradeable_init();
 
         _setAcceptedPaymentTokens(_acceptedPaymentTokens);
-        referrerRewardBps = _referrerRewardsBps;
+        referrerRewardBps = _referrerRewardBps;
     }
 
     /// @notice Purchases `itemsQuantities` of `itemsIds` for address `receiver`, paying required price in native token.

@@ -28,10 +28,10 @@ contract PaimaLaunchpadFactory is Ownable {
 
     /// @notice Deploy a new launchpad. If whitelistDeployersOnly is true, only whitelisted deployers can deploy new launchpads.
     /// @param owner Owner of the deployed launchpad
-    /// @param referrerRewardsBps Referrer rewards in basis points
+    /// @param referrerRewardBps Referrer rewards in basis points
     /// @param acceptedPaymentTokens Accepted payment tokens
     /// @return Address of the new Launchpad contract.
-    function deploy(address owner, uint256 referrerRewardsBps, address[] memory acceptedPaymentTokens)
+    function deploy(address owner, uint256 referrerRewardBps, address[] memory acceptedPaymentTokens)
         external
         returns (address)
     {
@@ -39,7 +39,7 @@ contract PaimaLaunchpadFactory is Ownable {
             revert PaimaLaunchpadFactory__NotWhitelisted();
         }
         bytes memory initializeData = abi.encodeWithSignature(
-            "initialize(address,uint256,address[])", owner, referrerRewardsBps, acceptedPaymentTokens
+            "initialize(address,uint256,address[])", owner, referrerRewardBps, acceptedPaymentTokens
         );
         ERC1967Proxy launchpadProxy = new ERC1967Proxy(launchpadImplementation, initializeData);
         emit LaunchpadDeployed(address(launchpadProxy));

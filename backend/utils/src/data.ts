@@ -11,6 +11,7 @@ const launchpadsData: LaunchpadData[] = [
     description: 'Description of Test Launchpad 1',
     image: '/images/game-icon-towerdefense.webp',
     referralDiscountBps: 100,
+    referrerRewardBps: 500,
     items: [
       {
         id: 1,
@@ -247,6 +248,7 @@ const launchpadsData: LaunchpadData[] = [
     name: 'Test Launchpad 2',
     description: 'Description of Test Launchpad 2',
     image: '/images/game-icon-junglewars.webp',
+    referrerRewardBps: 500,
     items: [
       {
         id: 1,

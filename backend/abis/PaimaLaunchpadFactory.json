@@ -17,7 +17,7 @@
     "inputs": [
       { "name": "owner", "type": "address", "internalType": "address" },
       {
-        "name": "referrerRewardsBps",
+        "name": "referrerRewardBps",
         "type": "uint256",
         "internalType": "uint256"
       },
