@@ -43,6 +43,9 @@ contract PaimaLaunchpad is OwnableUpgradeable, UUPSUpgradeable {
         _disableInitializers();
     }
 
+    /// @param _owner Owner of the contract
+    /// @param _referrerRewardBps Referrer reward in basis points
+    /// @param _acceptedPaymentTokens ERC20 tokens accepted for payment
     function initialize(address _owner, uint256 _referrerRewardBps, address[] memory _acceptedPaymentTokens)
         public
         initializer
