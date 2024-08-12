@@ -138,6 +138,6 @@ export type UserItemsStats = IGetUserItemsResult;
 export type RefundsStats = IGetRefundsResult;
 
 export type UserDataStats = {
-  user: UserStats;
+  user?: UserStats;
   items: UserItemsStats[];
 };

@@ -12,16 +12,20 @@ export class UserDataController extends Controller {
   @Get()
   public async get(
     @Query() launchpad: string,
-    @Query() wallet: string
+    @Query() wallet?: string
   ): Promise<GetUserDataResponse> {
     const pool = requirePool();
-    wallet = wallet.toLowerCase();
     const launchpadAddress = launchpadsData.find(lpad => lpad.slug === launchpad)?.address;
     if (!launchpadAddress) {
       return { stats: null };
     }
-    const items = await getUserItems.run({ launchpad: launchpadAddress, wallet }, pool);
-    const [user] = await getUser.run({ launchpad: launchpadAddress, wallet }, pool);
+    const items = await getUserItems.run(
+      { launchpad: launchpadAddress, wallet: wallet?.toLowerCase() ?? null },
+      pool
+    );
+    const [user] = wallet
+      ? await getUser.run({ launchpad: launchpadAddress, wallet: wallet.toLowerCase() }, pool)
+      : [undefined];
     return {
       stats: {
         items,

@@ -153,7 +153,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "LaunchpadData": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"curatedPackages":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"items":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"quantity":{"dataType":"double","required":true},"id":{"dataType":"double","required":true}}},"required":true},"description":{"dataType":"string"},"name":{"dataType":"string","required":true}}}},"referralDiscountBps":{"dataType":"double"},"whitelistedAddresses":{"dataType":"array","array":{"dataType":"string"}},"timestampEndSale":{"dataType":"double","required":true},"timestampStartPublicSale":{"dataType":"double","required":true},"timestampStartWhitelistSale":{"dataType":"double"},"items":{"dataType":"array","array":{"dataType":"refAlias","ref":"ItemType"},"required":true},"image":{"dataType":"string"},"description":{"dataType":"string","required":true},"name":{"dataType":"string","required":true},"address":{"dataType":"string","required":true},"slug":{"dataType":"string","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"curatedPackages":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"items":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"quantity":{"dataType":"double","required":true},"id":{"dataType":"double","required":true}}},"required":true},"description":{"dataType":"string"},"name":{"dataType":"string","required":true}}}},"referrerRewardBps":{"dataType":"double","required":true},"referralDiscountBps":{"dataType":"double"},"whitelistedAddresses":{"dataType":"array","array":{"dataType":"string"}},"timestampEndSale":{"dataType":"double","required":true},"timestampStartPublicSale":{"dataType":"double","required":true},"timestampStartWhitelistSale":{"dataType":"double"},"items":{"dataType":"array","array":{"dataType":"refAlias","ref":"ItemType"},"required":true},"image":{"dataType":"string"},"description":{"dataType":"string","required":true},"name":{"dataType":"string","required":true},"address":{"dataType":"string","required":true},"slug":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "GetLaunchpadsResponse": {
@@ -196,7 +196,7 @@ export function RegisterRoutes(app: Router) {
             async function UserDataController_get(request: ExRequest, response: ExResponse, next: any) {
             const args: Record<string, TsoaRoute.ParameterSchema> = {
                     launchpad: {"in":"query","name":"launchpad","required":true,"dataType":"string"},
-                    wallet: {"in":"query","name":"wallet","required":true,"dataType":"string"},
+                    wallet: {"in":"query","name":"wallet","dataType":"string"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

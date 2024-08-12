@@ -388,6 +388,11 @@
 						"type": "array",
 						"description": "List of curated packages of items (basically just a shortcut to add multiple items to the cart)"
 					},
+					"referrerRewardBps": {
+						"type": "number",
+						"format": "double",
+						"description": "Referrer reward (stored in the smart contract), expressed in basis points"
+					},
 					"referralDiscountBps": {
 						"type": "number",
 						"format": "double",
@@ -413,7 +418,7 @@
 					"timestampStartWhitelistSale": {
 						"type": "number",
 						"format": "double",
-						"description": "Optional UNIX timestamp of the start of the whitelist sale, in seconds. Omit if there is no whitelist sale"
+						"description": "Optional UNIX timestamp of the start of the whitelist sale, in seconds. Omit if there is no whitelist sale phase"
 					},
 					"items": {
 						"items": {
@@ -444,6 +449,7 @@
 					}
 				},
 				"required": [
+					"referrerRewardBps",
 					"timestampEndSale",
 					"timestampStartPublicSale",
 					"items",
@@ -527,7 +533,7 @@
 					{
 						"in": "query",
 						"name": "wallet",
-						"required": true,
+						"required": false,
 						"schema": {
 							"type": "string"
 						}

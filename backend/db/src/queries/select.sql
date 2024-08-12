@@ -23,8 +23,8 @@ WHERE launchpad = :launchpad! AND wallet = :wallet! AND paymentToken = :paymentT
 /*
   @name getUserItems
 */
-SELECT itemId, quantity FROM launchpad_user_items
-WHERE launchpad = :launchpad! AND wallet = :wallet!
+SELECT itemId, quantity, wallet FROM launchpad_user_items
+WHERE launchpad = :launchpad! AND (:wallet::TEXT IS NULL OR wallet = :wallet)
 ;
 
 /*

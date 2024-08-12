@@ -108,13 +108,14 @@ export const getParticipatedAmountTotal = new PreparedQuery<IGetParticipatedAmou
 /** 'GetUserItems' parameters type */
 export interface IGetUserItemsParams {
   launchpad: string;
-  wallet: string;
+  wallet?: string | null | void;
 }
 
 /** 'GetUserItems' return type */
 export interface IGetUserItemsResult {
   itemid: number;
   quantity: number;
+  wallet: string;
 }
 
 /** 'GetUserItems' query type */
@@ -123,13 +124,13 @@ export interface IGetUserItemsQuery {
   result: IGetUserItemsResult;
 }
 
-const getUserItemsIR: any = {"usedParamSet":{"launchpad":true,"wallet":true},"params":[{"name":"launchpad","required":true,"transform":{"type":"scalar"},"locs":[{"a":68,"b":78}]},{"name":"wallet","required":true,"transform":{"type":"scalar"},"locs":[{"a":93,"b":100}]}],"statement":"SELECT itemId, quantity FROM launchpad_user_items\nWHERE launchpad = :launchpad! AND wallet = :wallet!"};
+const getUserItemsIR: any = {"usedParamSet":{"launchpad":true,"wallet":true},"params":[{"name":"launchpad","required":true,"transform":{"type":"scalar"},"locs":[{"a":76,"b":86}]},{"name":"wallet","required":false,"transform":{"type":"scalar"},"locs":[{"a":93,"b":99},{"a":127,"b":133}]}],"statement":"SELECT itemId, quantity, wallet FROM launchpad_user_items\nWHERE launchpad = :launchpad! AND (:wallet::TEXT IS NULL OR wallet = :wallet)"};
 
 /**
  * Query generated from SQL:
  * ```
- * SELECT itemId, quantity FROM launchpad_user_items
- * WHERE launchpad = :launchpad! AND wallet = :wallet!
+ * SELECT itemId, quantity, wallet FROM launchpad_user_items
+ * WHERE launchpad = :launchpad! AND (:wallet::TEXT IS NULL OR wallet = :wallet)
  * ```
  */
 export const getUserItems = new PreparedQuery<IGetUserItemsParams,IGetUserItemsResult>(getUserItemsIR);
