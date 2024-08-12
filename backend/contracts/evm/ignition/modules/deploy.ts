@@ -9,7 +9,7 @@ export default buildModule('PaimaLaunchpad', m => {
 
   const launchpadImpl = m.contract('PaimaLaunchpad', [], { id: 'PaimaLaunchpad_implementation' });
 
-  const factory = m.contract('PaimaLaunchpadFactory', [launchpadImpl, owner], {
+  const factory = m.contract('PaimaLaunchpadFactory', [launchpadImpl, owner, true], {
     id: 'PaimaLaunchpad_factory',
   });
 

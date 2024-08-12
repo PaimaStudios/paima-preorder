@@ -19,11 +19,16 @@ contract PaimaLaunchpadFactory is Ownable {
     error PaimaLaunchpadFactory__InvalidZeroValue();
     error PaimaLaunchpadFactory__NotWhitelisted();
 
-    constructor(address _launchpadImplementation, address _owner) Ownable(_owner) {
+    /// @param _launchpadImplementation Address of the deployed PaimaLaunchpad implementation contract
+    /// @param _owner Owner of the factory contract
+    /// @param _whitelistDeployersOnly If true, only whitelisted deployers can deploy new launchpads
+    constructor(address _launchpadImplementation, address _owner, bool _whitelistDeployersOnly) Ownable(_owner) {
         if (_launchpadImplementation == address(0)) {
             revert PaimaLaunchpadFactory__InvalidZeroValue();
         }
         launchpadImplementation = _launchpadImplementation;
+        whitelistDeployersOnly = _whitelistDeployersOnly;
+        whitelistedDeployers[_owner] = true;
     }
 
     /// @notice Deploy a new launchpad. If whitelistDeployersOnly is true, only whitelisted deployers can deploy new launchpads.
