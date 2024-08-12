@@ -60,8 +60,8 @@
     "@openzeppelin/contracts": "^5.0.1",
     "@openzeppelin/contracts-upgradeable": "^5.0.1",
     "@paima/evm-contracts": "3.1.0",
-    "@paima/node-sdk": "3.0.0",
-    "@paima/sdk": "3.0.0"
+    "@paima/node-sdk": "4.0.0",
+    "@paima/sdk": "4.0.0"
   },
   "overrides": {
     "@nomicfoundation/hardhat-toolbox-viem": {

@@ -26,8 +26,9 @@ export async function buyItems(params: {
   launchpadAddress: string;
   dbConn: Pool;
   blockHeight: number;
+  timestamp: number;
 }): Promise<SQLUpdate[]> {
-  const { inputData, txHash, launchpadAddress, dbConn, blockHeight } = params;
+  const { inputData, txHash, launchpadAddress, dbConn, blockHeight, timestamp } = params;
   const launchpadData = launchpadsData.find(
     launchpad => launchpad.address.toLowerCase() === launchpadAddress.toLowerCase()
   );
@@ -36,13 +37,12 @@ export async function buyItems(params: {
     return [];
   }
 
-  // todo: DEFINE CORRECT TIMESTAMP WHEN PAIMA ENGINE IS UPDATED TO SUPPORT IT
   const preconditionsMet = await checkPreconditions({
     inputData,
     launchpadData,
     launchpadAddress,
     dbConn,
-    timestamp: blockHeight,
+    timestamp,
   });
   if (!preconditionsMet) {
     return [
@@ -117,10 +117,10 @@ async function checkPreconditions(params: {
   const startSale =
     launchpadData.timestampStartWhitelistSale || launchpadData.timestampStartPublicSale;
   if (timestamp < startSale) {
-    console.log(`Block height ${timestamp} is before whitelist sale start ${startSale}`);
+    console.log(`Timestamp ${timestamp} is before sale start ${startSale}`);
     return false;
   } else if (timestamp > launchpadData.timestampEndSale) {
-    console.log(`Block height ${timestamp} is after sale end ${launchpadData.timestampEndSale}`);
+    console.log(`Timestamp ${timestamp} is after sale end ${launchpadData.timestampEndSale}`);
     return false;
   } else if (
     launchpadData.timestampStartWhitelistSale &&
@@ -129,7 +129,7 @@ async function checkPreconditions(params: {
     !launchpadData.whitelistedAddresses.includes(inputData.payload.buyer)
   ) {
     console.log(
-      `Block height ${timestamp} is in whitelist sale phase ${launchpadData.timestampStartWhitelistSale}-${launchpadData.timestampStartPublicSale} and ${inputData.payload.buyer} is not whitelisted`
+      `Timestamp ${timestamp} is in whitelist sale phase ${launchpadData.timestampStartWhitelistSale}-${launchpadData.timestampStartPublicSale} and ${inputData.payload.buyer} is not whitelisted`
     );
     return false;
   }

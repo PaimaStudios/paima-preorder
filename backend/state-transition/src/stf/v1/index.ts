@@ -2,7 +2,8 @@ import type { Pool } from 'pg';
 
 import parse from './parser.js';
 import type Prando from '@paima/sdk/prando';
-import { SCHEDULED_DATA_ADDRESS, type STFSubmittedData } from '@paima/sdk/utils';
+import type { BlockHeader, STFSubmittedData } from '@paima/sdk/utils';
+import { SCHEDULED_DATA_ADDRESS } from '@paima/sdk/utils';
 import type { SQLUpdate } from '@paima/node-sdk/db';
 import { getDynamicExtensionByName } from '@paima/node-sdk/utils-backend';
 import { buyItems } from './persist/global.js';
@@ -10,7 +11,7 @@ import { buyItems } from './persist/global.js';
 // entrypoint for your state machine
 export default async function (
   inputData: STFSubmittedData,
-  blockHeight: number,
+  blockHeader: BlockHeader,
   randomnessGenerator: Prando,
   dbConn: Pool
 ): Promise<SQLUpdate[]> {
@@ -32,7 +33,8 @@ export default async function (
         txHash: inputData.scheduledTxHash ?? '0x',
         launchpadAddress: await getContractAddressForEvent(dbConn, inputData.extensionName!),
         dbConn,
-        blockHeight,
+        blockHeight: blockHeader.blockHeight,
+        timestamp: blockHeader.timestamp,
       });
     case 'deployed':
       if (inputData.realAddress !== SCHEDULED_DATA_ADDRESS) {

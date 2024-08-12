@@ -37,7 +37,7 @@ npm run pack
 
 ## Prerequisites
 
-Ensure that the `paima-engine-{linux|mac}` executable is located in the parent directory of this project. The directory structure should be as follows:
+Ensure that the `paima-engine-{linux|mac}` executable is located in the parent directory of this project. Version needs to be at least 4.0.0, which is the version that this project was tested with. The directory structure should be as follows:
 
 ```
 this-template
