@@ -4,7 +4,17 @@ This documentation provides a basic overview of the template. Each module has it
 
 ## Usage
 
-Launchpads data is stored in `utils/src/data.ts`. Edit that to add/change offered launchpads.
+Launchpads data is stored in `utils/src/data.ts`. Edit that to add/change offered launchpads. The data properties are explained in the type's comments.
+
+## Prerequisites
+
+Ensure that the `paima-engine-{linux|mac}` executable is located in the parent directory of this project. Version needs to be at least 4.0.0, which is the version that this project was tested with. The directory structure should be as follows:
+
+```
+this-template
+../paima-engine-linux
+../.env
+```
 
 ## Installation
 
@@ -34,20 +44,6 @@ To compile the Game Node into `endpoints` and `gameCode` entrypoints used by Pai
 ```
 npm run pack
 ```
-
-## Prerequisites
-
-Ensure that the `paima-engine-{linux|mac}` executable is located in the parent directory of this project. Version needs to be at least 4.0.0, which is the version that this project was tested with. The directory structure should be as follows:
-
-```
-this-template
-../paima-engine-linux
-../.env
-```
-
-### WARNING
-
-There's a bug that if START_BLOCKHEIGHT is not 0 and you restart Paima Engine, it will duplicate the dynamic extension, causing processing the events two times, creating problems when comparing already contributed amount with the total price of items bought. Bug has been fixed in https://github.com/PaimaStudios/paima-engine/pull/399 but not yet released as of time of writing.
 
 ## Environment Setup
 
