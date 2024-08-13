@@ -1,17 +1,17 @@
-# Launchpad Node Template
+# Paima Launchpad Backend
 
-This documentation provides a basic overview of the template. Each module has its own `README` file with more detailed information.
+This documentation provides a basic overview of the backend. Each module has its own `README` file with more detailed information.
 
 ## Usage
 
-Launchpads data is stored in `utils/src/data.ts`. Edit that to add/change offered launchpads. The data properties are explained in the type's comments.
+Launchpads data is stored in `utils/src/data.ts`. Edit that to add/change available launchpads. The data properties are explained in the type's comments.
 
 ## Prerequisites
 
-Ensure that the `paima-engine-{linux|mac}` executable is located in the parent directory of this project. Version needs to be at least 4.0.0, which is the version that this project was tested with. The directory structure should be as follows:
+Ensure that the `paima-engine-{linux|mac}` executable is located in the parent directory of this project. Paima Engine version needs to be at least 4.0.0, which is the version that this project was tested with. The directory structure should be as follows:
 
 ```
-this-template
+backend
 ../paima-engine-linux
 ../.env
 ```
@@ -27,7 +27,7 @@ npm run initialize
 This does the following:
 
 - install dependencies of this template
-- copies `.env.example` as `.env.localhost` to the parent folder
+- copies `.env.example` as `.env.localhost` to the parent folder - edit that file as necessary
 
 ### MacOS specific
 
@@ -54,7 +54,7 @@ Feel free to use examples written in the file for initial testing.
 ## Contracts
 
 1. Start a local network using `npm run chain:start`
-2. `npm run chain:deploy`
+2. Deploy the contracts using `npm run chain:deploy`
 
 ## Development
 
