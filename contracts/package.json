@@ -28,6 +28,9 @@
     "deploy:orderbook:localhost": "bash -c 'source .env && forge script script/DeployOrderbook.s.sol:DeployOrderbookDex --broadcast --private-key $LOCALCHAIN_DEPLOYER_PK --fork-url http://localhost:8545'",
     "deploy:orderbook:arb:testnet": "bash -c 'source .env && forge script script/DeployOrderbook.s.sol:DeployOrderbookDex --rpc-url $ARB_TESTNET_RPC --broadcast --private-key $DEPLOYER_PK'",
     "deploy:orderbook:arb:mainnet": "bash -c 'source .env && forge script script/DeployOrderbook.s.sol:DeployOrderbookDex --rpc-url $ARB_MAINNET_RPC --broadcast --private-key $DEPLOYER_PK --verify --etherscan-api-key $ARBISCAN_API_KEY'",
+    "deploy:launchpad:localhost": "bash -c 'source .env && forge script script/DeployLaunchpad.s.sol:DeployLaunchpad --broadcast --private-key $LOCALCHAIN_DEPLOYER_PK --fork-url http://localhost:8545'",
+    "deploy:launchpad:testnet": "bash -c 'source .env && forge script script/DeployLaunchpad.s.sol:DeployLaunchpad --rpc-url $TESTNET_RPC --broadcast --private-key $DEPLOYER_PK'",
+    "deploy:launchpad:mainnet": "bash -c 'source .env && forge script script/DeployLaunchpad.s.sol:DeployLaunchpad --rpc-url $MAINNET_RPC --broadcast --private-key $DEPLOYER_PK --verify --etherscan-api-key $ETHERSCAN_API_KEY'",
     "test": "forge test -vv"
   },
   "author": "",

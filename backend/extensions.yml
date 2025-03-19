@@ -1,0 +1,22 @@
+extensions:
+  - name: "PaimaLaunchpadFactory deploy"
+    type: "generic"
+    contractAddress: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9"
+    startBlockHeight: 0
+    abiPath: "./backend/abis/PaimaLaunchpadFactory.json"
+    eventSignature: "LaunchpadDeployed(address)"
+    scheduledPrefix: "deployed"
+
+  - name: "PaimaLaunchpad bought items"
+    type: "dynamic-evm-primitive"
+    contractAddress: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9"
+    eventSignature: "LaunchpadDeployed(address)"
+    abiPath: "./backend/abis/PaimaLaunchpadFactory.json"
+    targetConfig:
+      scheduledPrefix: "boughtItems"
+      type: "generic"
+      abiPath: "./backend/abis/PaimaLaunchpad.json"
+      eventSignature: "BuyItems(address,address,address,uint256,address,uint256[],uint256[])"
+    startBlockHeight: 0
+    dynamicFields:
+      contractAddress: launchpad

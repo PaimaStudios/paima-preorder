@@ -1,10 +1,44 @@
-/node_modules
-.env.production
-.env.development
-.env.test
-.env
+jestSetup.d.ts
+jestSetup.js
+db/src/pgPool.js
+
+node_modules
+*.tsbuildinfo
+
 build
-**/.DS_Store
+lib
+dist
+dist-ssr
+
+# Editor directories and files
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Logs
 logs
-typechain
-data/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+snapshots
+
+*.local
+
+.env
+.env.testnet
+.env.mainnet
+
+# Frontend
+build.zip
+WebGL
+frontend/paimaMiddleware.js
+
+# recompiled code for standalone purposes
+packaged/*

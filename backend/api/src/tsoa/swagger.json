@@ -1,0 +1,669 @@
+{
+	"openapi": "3.0.0",
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"IGetUserResult": {
+				"description": "'GetUser' return type",
+				"properties": {
+					"lastparticipationvalid": {
+						"type": "boolean"
+					},
+					"lastreferrer": {
+						"type": "string"
+					},
+					"launchpad": {
+						"type": "string"
+					},
+					"paymenttoken": {
+						"type": "string"
+					},
+					"totalamount": {
+						"type": "string"
+					},
+					"wallet": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"lastparticipationvalid",
+					"lastreferrer",
+					"launchpad",
+					"paymenttoken",
+					"totalamount",
+					"wallet"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UserStats": {
+				"$ref": "#/components/schemas/IGetUserResult"
+			},
+			"IGetUserItemsResult": {
+				"description": "'GetUserItems' return type",
+				"properties": {
+					"itemid": {
+						"type": "number",
+						"format": "double"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"itemid",
+					"quantity"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UserItemsStats": {
+				"$ref": "#/components/schemas/IGetUserItemsResult"
+			},
+			"UserDataStats": {
+				"properties": {
+					"items": {
+						"items": {
+							"$ref": "#/components/schemas/UserItemsStats"
+						},
+						"type": "array"
+					},
+					"user": {
+						"$ref": "#/components/schemas/UserStats"
+					}
+				},
+				"required": [
+					"items",
+					"user"
+				],
+				"type": "object"
+			},
+			"GetUserDataResponse": {
+				"properties": {
+					"stats": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/UserDataStats"
+							}
+						],
+						"nullable": true
+					}
+				},
+				"required": [
+					"stats"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IGetRefundsResult": {
+				"description": "'GetRefunds' return type",
+				"properties": {
+					"blockheight": {
+						"type": "number",
+						"format": "double"
+					},
+					"itemids": {
+						"type": "string"
+					},
+					"itemquantities": {
+						"type": "string"
+					},
+					"launchpad": {
+						"type": "string"
+					},
+					"participationvalid": {
+						"type": "boolean"
+					},
+					"paymentamount": {
+						"type": "string"
+					},
+					"paymenttoken": {
+						"type": "string"
+					},
+					"preconditionsmet": {
+						"type": "boolean"
+					},
+					"referrer": {
+						"type": "string"
+					},
+					"txhash": {
+						"type": "string"
+					},
+					"wallet": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"blockheight",
+					"itemids",
+					"itemquantities",
+					"launchpad",
+					"participationvalid",
+					"paymentamount",
+					"paymenttoken",
+					"preconditionsmet",
+					"referrer",
+					"txhash",
+					"wallet"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"RefundsStats": {
+				"$ref": "#/components/schemas/IGetRefundsResult"
+			},
+			"GetRefundsResponse": {
+				"properties": {
+					"stats": {
+						"items": {
+							"$ref": "#/components/schemas/RefundsStats"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"stats"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IGetParticipationsResult": {
+				"description": "'GetParticipations' return type",
+				"properties": {
+					"blockheight": {
+						"type": "number",
+						"format": "double"
+					},
+					"itemids": {
+						"type": "string"
+					},
+					"itemquantities": {
+						"type": "string"
+					},
+					"launchpad": {
+						"type": "string"
+					},
+					"participationvalid": {
+						"type": "boolean"
+					},
+					"paymentamount": {
+						"type": "string"
+					},
+					"paymenttoken": {
+						"type": "string"
+					},
+					"preconditionsmet": {
+						"type": "boolean"
+					},
+					"referrer": {
+						"type": "string"
+					},
+					"txhash": {
+						"type": "string"
+					},
+					"wallet": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"blockheight",
+					"itemids",
+					"itemquantities",
+					"launchpad",
+					"participationvalid",
+					"paymentamount",
+					"paymenttoken",
+					"preconditionsmet",
+					"referrer",
+					"txhash",
+					"wallet"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ParticipationsStats": {
+				"$ref": "#/components/schemas/IGetParticipationsResult"
+			},
+			"GetParticipationsResponse": {
+				"properties": {
+					"stats": {
+						"items": {
+							"$ref": "#/components/schemas/ParticipationsStats"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"stats"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CommonItemProps": {
+				"properties": {
+					"purchased": {
+						"type": "number",
+						"format": "double",
+						"description": "Number of purchased items, filled by the backend"
+					},
+					"supply": {
+						"type": "number",
+						"format": "double",
+						"description": "Optional supply of the item, if omitted the item is considered to be unlimited"
+					},
+					"image": {
+						"type": "string",
+						"description": "Optional URL to the image displayed in the frontend"
+					},
+					"description": {
+						"type": "string",
+						"description": "Item description displayed in the frontend"
+					},
+					"name": {
+						"type": "string",
+						"description": "Item name to be displayed on the frontend"
+					},
+					"id": {
+						"type": "number",
+						"format": "double",
+						"description": "Item ID that will be also emitted in the events"
+					}
+				},
+				"required": [
+					"description",
+					"name",
+					"id"
+				],
+				"type": "object"
+			},
+			"Record_string.string_": {
+				"properties": {},
+				"additionalProperties": {
+					"type": "string"
+				},
+				"type": "object",
+				"description": "Construct a type with a set of properties K of type T"
+			},
+			"StandardItem": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/CommonItemProps"
+					},
+					{
+						"properties": {
+							"referralDiscountBps": {
+								"type": "number",
+								"format": "double",
+								"description": "Optional override of the referral discount to the price of the item, expressed in basis points"
+							},
+							"prices": {
+								"$ref": "#/components/schemas/Record_string.string_",
+								"description": "Map of payment token identifier (address) to price of the item"
+							}
+						},
+						"required": [
+							"prices"
+						],
+						"type": "object"
+					}
+				]
+			},
+			"FreeRewardItem": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/CommonItemProps"
+					},
+					{
+						"properties": {
+							"freeAt": {
+								"$ref": "#/components/schemas/Record_string.string_",
+								"description": "Map of payment token identifier (address) to amount per which the item is able to be claimed for free"
+							}
+						},
+						"required": [
+							"freeAt"
+						],
+						"type": "object"
+					}
+				]
+			},
+			"ItemType": {
+				"anyOf": [
+					{
+						"$ref": "#/components/schemas/StandardItem"
+					},
+					{
+						"$ref": "#/components/schemas/FreeRewardItem"
+					}
+				]
+			},
+			"LaunchpadData": {
+				"properties": {
+					"curatedPackages": {
+						"items": {
+							"properties": {
+								"items": {
+									"items": {
+										"properties": {
+											"quantity": {
+												"type": "number",
+												"format": "double",
+												"description": "Quantity of the item in the package"
+											},
+											"id": {
+												"type": "number",
+												"format": "double",
+												"description": "Item ID corresponding to the `items` array"
+											}
+										},
+										"required": [
+											"quantity",
+											"id"
+										],
+										"type": "object"
+									},
+									"type": "array",
+									"description": "List of items that are part of the package"
+								},
+								"description": {
+									"type": "string",
+									"description": "Optional package description displayed in the frontend, if omitted the enumeration of package items will be displayed"
+								},
+								"name": {
+									"type": "string",
+									"description": "Package name to be displayed on the frontend"
+								}
+							},
+							"required": [
+								"items",
+								"name"
+							],
+							"type": "object"
+						},
+						"type": "array",
+						"description": "List of curated packages of items (basically just a shortcut to add multiple items to the cart)"
+					},
+					"referrerRewardBps": {
+						"type": "number",
+						"format": "double",
+						"description": "Referrer reward (stored in the smart contract), expressed in basis points"
+					},
+					"referralDiscountBps": {
+						"type": "number",
+						"format": "double",
+						"description": "Default referral discount to the prices of items, expressed in basis points"
+					},
+					"whitelistedAddresses": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array",
+						"description": "List of addresses that are whitelisted for the whitelist sale. Omit if there is no whitelist sale"
+					},
+					"timestampEndSale": {
+						"type": "number",
+						"format": "double",
+						"description": "UNIX timestamp of the end of the sale, in seconds"
+					},
+					"timestampStartPublicSale": {
+						"type": "number",
+						"format": "double",
+						"description": "UNIX timestamp of the start of the public sale, in seconds"
+					},
+					"timestampStartWhitelistSale": {
+						"type": "number",
+						"format": "double",
+						"description": "Optional UNIX timestamp of the start of the whitelist sale, in seconds. Omit if there is no whitelist sale phase"
+					},
+					"items": {
+						"items": {
+							"$ref": "#/components/schemas/ItemType"
+						},
+						"type": "array",
+						"description": "List of items available for purchase in the launchpad"
+					},
+					"image": {
+						"type": "string",
+						"description": "URL to the image displayed in the launchpads list"
+					},
+					"description": {
+						"type": "string",
+						"description": "Game description displayed in the launchpads list"
+					},
+					"name": {
+						"type": "string",
+						"description": "Launchpad name to be displayed on the frontend"
+					},
+					"address": {
+						"type": "string",
+						"description": "Launchpad contract address"
+					},
+					"slug": {
+						"type": "string",
+						"description": "URL-friendly slug of the name"
+					}
+				},
+				"required": [
+					"referrerRewardBps",
+					"timestampEndSale",
+					"timestampStartPublicSale",
+					"items",
+					"description",
+					"name",
+					"address",
+					"slug"
+				],
+				"type": "object"
+			},
+			"GetLaunchpadsResponse": {
+				"properties": {
+					"stats": {
+						"items": {
+							"$ref": "#/components/schemas/LaunchpadData"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"stats"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"GetLaunchpadResponse": {
+				"properties": {
+					"stats": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/LaunchpadData"
+							}
+						],
+						"nullable": true
+					}
+				},
+				"required": [
+					"stats"
+				],
+				"type": "object",
+				"additionalProperties": false
+			}
+		},
+		"securitySchemes": {}
+	},
+	"info": {
+		"title": "@game/api",
+		"version": "1.0.0",
+		"description": "Webserver REST API for the middleware to interact with game node.",
+		"license": {
+			"name": "ISC"
+		},
+		"contact": {}
+	},
+	"paths": {
+		"/userData": {
+			"get": {
+				"operationId": "Get",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/GetUserDataResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "launchpad",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "wallet",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/refunds": {
+			"get": {
+				"operationId": "Get",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/GetRefundsResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "launchpad",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "wallet",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/participations": {
+			"get": {
+				"operationId": "Get",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/GetParticipationsResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "launchpad",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "wallet",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/launchpads": {
+			"get": {
+				"operationId": "Get",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/GetLaunchpadsResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/launchpad": {
+			"get": {
+				"operationId": "Get",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/GetLaunchpadResponse"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "launchpad",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "/"
+		}
+	]
+}

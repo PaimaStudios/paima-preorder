@@ -1,1 +1,6 @@
 .vscode
+paima-engine-linux
+/.env.localhost
+/extensions.yml
+/logs.log
+/packaged/
